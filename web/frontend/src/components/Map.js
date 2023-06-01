@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import RoutingMachine from "./RoutingMachine";
@@ -46,14 +47,6 @@ function MyMap() {
           <RoutingMachine road={road} />
         ))}
       </MapContainer>
-      <div>
-            {roadList.map(road => (
-                    <>
-                    <Road road={road} key={road._id}></Road>
-                    <hr />
-                </>
-            ))}
-      </div>
     </div>
   );
 }

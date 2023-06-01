@@ -7,9 +7,8 @@ import Register from "./components/Register";
 import Profile from "./components/Profile";
 import Logout from "./components/Logout";
 import 'leaflet/dist/leaflet.css';
-import Map from './components/Map';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import Roads from './components/Roads';
 
 function App() {
   /**
@@ -52,7 +51,7 @@ function App() {
           <Header title="My application"></Header>
           <Routes>
           
-            <Route path="/" exact element={<Map />}></Route>
+            <Route path="/" exact element={<Roads />}></Route>
             <Route path="/login" exact element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/profile" element={<Profile />}></Route>
