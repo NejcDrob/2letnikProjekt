@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import RoutingMachine from "./RoutingMachine";
-import Road from './Road';
 import "leaflet/dist/leaflet.css"
 import "leaflet-routing-machine"
 
