@@ -2,11 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import RoutingMachine from "./RoutingMachine";
 import Road from './Road';
+import "leaflet/dist/leaflet.css"
+import "leaflet-routing-machine"
 
 function MyMap() {
-  const position = [51.505, -0.09];
+  const position = [46.638587, 15.615779];
   const [roadList, setRoadList] = useState([]);
-  const mapRef = useRef(null);
+  const mapRef = React.createRef();
 
   useEffect(() => {
     const getRoadList = async function () {
@@ -27,6 +29,7 @@ function MyMap() {
     }
   }, [roadList]);
 
+
   return (
     <div className="map">
       <MapContainer
@@ -39,8 +42,8 @@ function MyMap() {
         <Marker position={position}>
           <Popup>A pretty CSS3 popup. <br /> Easily customizable.</Popup>
         </Marker>
-        {roadList.map((road, index) => (
-          <RoutingMachine key={index} road={road} weight={5} />
+        {roadList.map((road) => (
+          <RoutingMachine road={road} />
         ))}
       </MapContainer>
       <div>
@@ -50,7 +53,7 @@ function MyMap() {
                     <hr />
                 </>
             ))}
-        </div>
+      </div>
     </div>
   );
 }

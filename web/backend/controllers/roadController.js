@@ -30,6 +30,7 @@ module.exports = {
 			yStart : req.body.yStart,
 			xEnd : req.body.xEnd,
 			yEnd : req.body.yEnd,
+            postedBy : req.body.postedBy,
             state : req.body.state
         });
 
