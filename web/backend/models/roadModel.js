@@ -6,10 +6,13 @@ var roadSchema = new Schema({
 	'yStart': Number,
 	'xEnd': Number,
 	'yEnd': Number,
-	'postedBy' : String,
 	'state': {
 		type: Number,
 		default: 0
+	},
+	'postedBy' : {
+		type: String,
+		default:"prazno"
 	}
 });
 
