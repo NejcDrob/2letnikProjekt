@@ -6,7 +6,8 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Profile from "./components/Profile";
 import Logout from "./components/Logout";
-
+import 'leaflet/dist/leaflet.css';
+import Map from './components/Map';
 
 function App() {
   /**
@@ -48,12 +49,14 @@ function App() {
         <div className="App">
           <Header title="My application"></Header>
           <Routes>
+           
             <Route path="/login" exact element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/profile" element={<Profile />}></Route>
             <Route path="/logout" element={<Logout />}></Route>
+           
           </Routes>
-
+          <Map />
         </div>
       </UserContext.Provider>
     </BrowserRouter>
