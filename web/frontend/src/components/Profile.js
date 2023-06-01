@@ -30,15 +30,23 @@ function Profile(){
     return (
         <>
             {!userContext.user ? <Navigate replace to="/login" /> : ""}
-            <h1>User profile</h1>
-            <p>Username: {profile.username}</p>
-            <p>Email: {profile.email}</p>
+            <div className="d-flex justify-content-center">
+    <div className="d-inline-block">
+        <div className="card">
+            <div className="card-body text-center">
+                <h1 className="card-title display-4">User profile</h1>
+                <p className="card-text h5">Username: {profile.username}</p>
+                <p className="card-text h5">Email: {profile.email}</p>
+            </div>
+        </div>
+    </div>
+</div>
             <div>
             {roadList.map(road => (   
                 <Road road={road} key={road._id}></Road>
             ))}
         </div>
-         
+          
         </>
         
     );

@@ -5,11 +5,19 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url('./components/imgs/bg.jpg');
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+.header {
+  height: 60px; 
+
+}
+.body-content {
+  padding-top: 60px; 
 }
 
 .map{
@@ -20,5 +28,5 @@ code {
   float: right;
   overflow: hidden;
   margin-right: 5%;
-  margin-top: -5%;
+  margin-top: 10%;
 }

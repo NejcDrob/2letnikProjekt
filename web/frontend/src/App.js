@@ -47,7 +47,7 @@ function App() {
         user: user,
         setUserContext: updateUserData
       }}>
-        <div className="App">
+        <div className="App .body-content" >
           <Header title="My application"></Header>
           <Routes>
           

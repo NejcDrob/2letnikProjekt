@@ -4,27 +4,31 @@ import { Link } from "react-router-dom";
 
 function Header(props) {
     return (
-        <header>
-            <h1>{props.title}</h1>
-            <nav>
-                <ul>
-                    <li><Link to='/'>Home</Link></li>
+        <header className="header">
+            <nav class="navbar navbar-expand bg-dark navbar-dark text-white fixed-top">
+                <div class="container-fluid">
+                    <a class="navbar-brand nav-link" href="/">{props.title}</a>
+                    <div class="collapse navbar-collapse justify-content-end">
+                        <ul class="navbar-nav">
+                    <li class="nav-item"><Link class="nav-link" to='/'>Home</Link></li>
                     <UserContext.Consumer>
                         {context => (
                             context.user ?
                                 <>
-                                    <li><Link to='/profile'>Profile</Link></li>
-                                    <li><Link to='/logout'>Logout</Link></li>
+                                    <li class="nav-item"><Link  class="nav-link" to='/profile'>Profile</Link></li>
+                                    <li class="nav-item"><Link  class="nav-link" to='/logout'>Logout</Link></li>
                                 </>
                             :
                                 <>
-                                    <li><Link to='/login'>Login</Link></li>
-                                    <li><Link to='/register'>Register</Link></li>
+                                    <li class="nav-item"><Link  class="nav-link" to='/login'>Login</Link></li>
+                                    <li class="nav-item"><Link   class="nav-link" to='/register'>Register</Link></li>
                                 </>
 
                         )}
                     </UserContext.Consumer>
-                </ul>
+                    </ul>
+                    </div>
+                </div>
             </nav>
         </header>
     );
