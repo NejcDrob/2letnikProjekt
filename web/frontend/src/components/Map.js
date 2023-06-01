@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-
+import Road from './Road';
 function MyMap() {
-  const position = [51.505, -0.09];
+  const position = [46.55472, 15.64667]; 
   const [roadList, setRoadList] = useState([])
   useEffect(()=>{
     const getRoadList=async function(){
@@ -26,6 +26,14 @@ function MyMap() {
           </Popup>
         </Marker>
       </MapContainer>
+      <div>
+            {roadList.map(road => (
+                    <>
+                    <Road road={road} key={road._id}></Road>
+                    <hr />
+                </>
+            ))}
+        </div>
     </div>
   );
 }
