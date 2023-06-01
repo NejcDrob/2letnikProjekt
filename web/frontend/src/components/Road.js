@@ -4,12 +4,14 @@ import { useState } from "react";
 function Road(props) {
     return (
         <>
-            <div >
-                <div >
-                    <h5 >{props.road.state}</h5>
-                </div>
-                <h6 >Objavil: {props.road.postedBy} </h6>
-            </div>
+<div className="card d-inline-block">
+  <div className="card-body">
+    <h5 className="card-title">{props.road.state}</h5>
+    <h6 className="card-subtitle mb-2 text-muted">Objavil: {props.road.postedBy}</h6>
+  </div>
+</div>
+
+
         </>
     );
 }
