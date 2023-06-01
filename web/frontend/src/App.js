@@ -51,14 +51,14 @@ function App() {
         <div className="App">
           <Header title="My application"></Header>
           <Routes>
-           
+          
+            <Route path="/" exact element={<Map />}></Route>
             <Route path="/login" exact element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
             <Route path="/profile" element={<Profile />}></Route>
             <Route path="/logout" element={<Logout />}></Route>
            
           </Routes>
-          <Map />
         </div>
       </UserContext.Provider>
     </BrowserRouter>
