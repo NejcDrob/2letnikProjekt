@@ -8,6 +8,8 @@ import Profile from "./components/Profile";
 import Logout from "./components/Logout";
 import 'leaflet/dist/leaflet.css';
 import Map from './components/Map';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function App() {
   /**

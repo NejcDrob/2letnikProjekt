@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.map{
+  border: 2px solid black;
+  width: 40vw !important;
+  height: 70vh !important;
+  position: relative;
+  float: right;
+  overflow: hidden;
+  margin-right: 5%;
+  margin-top: -5%;
+}
