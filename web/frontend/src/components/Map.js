@@ -4,11 +4,16 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import RoutingMachine from "./RoutingMachine";
 import "leaflet/dist/leaflet.css"
 import "leaflet-routing-machine"
+import L from 'leaflet';
 
 function MyMap() {
   const position = [46.638587, 15.615779];
   const [roadList, setRoadList] = useState([]);
   const mapRef = React.createRef();
+  const markerIcon = L.icon({
+    iconUrl: './images/icon3.png',
+    iconSize: [30, 30], // Adjust the size of the icon
+  });
 
   useEffect(() => {
     const getRoadList = async function () {
@@ -39,7 +44,7 @@ function MyMap() {
         ref={mapRef}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={position}>
+        <Marker position={position} icon={markerIcon}>
           <Popup>A pretty CSS3 popup. <br /> Easily customizable.</Popup>
         </Marker>
         {roadList.map((road) => (
