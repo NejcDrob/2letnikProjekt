@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.drivingapp
 
 import android.Manifest
 import android.content.Context
@@ -18,6 +18,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.example.app.R
 
 class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, LocationListener {
 

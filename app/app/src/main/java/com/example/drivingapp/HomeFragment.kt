@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.app.MainActivity
 import com.example.app.R
 import com.example.app.databinding.FragmentHomeBinding
 import okhttp3.*
