@@ -22,7 +22,6 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.bson.Document
 import org.json.JSONObject
-import org.mindrot.jbcrypt.BCrypt
 import java.io.IOException
 
 
@@ -40,6 +39,7 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.signupButton.setOnClickListener {
+            println("button clicked")
             val username = binding.usernameEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
 
@@ -49,6 +49,7 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
         binding.loginButton.setOnClickListener {
             val username = binding.usernameEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
+            println("button clicked")
             lifecycleScope.launch(Dispatchers.Default) {
 
            login(username, password)
