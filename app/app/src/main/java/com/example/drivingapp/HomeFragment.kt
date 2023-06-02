@@ -1,5 +1,6 @@
 package com.example.drivingapp
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -29,6 +30,11 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
     private val client = OkHttpClient()
     val email = "t"
+    lateinit var myApplication: MyApplication
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
