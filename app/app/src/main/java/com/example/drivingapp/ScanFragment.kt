@@ -24,9 +24,12 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
 
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
+    private var gyroscope: Sensor? = null
     private lateinit var locationManager: LocationManager
     private lateinit var accelerometerDataTextView: TextView
     private lateinit var locationDataTextView: TextView
+    private lateinit var speedTextView: TextView
+    private lateinit var buttonStart: Button
 
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
@@ -49,9 +52,6 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSION_REQUEST_CODE
             )
-        } else {
-            // Permission granted, start sensors
-            startSensors()
         }
     }
 
@@ -70,27 +70,70 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         // Initialize sensor manager
         sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-        // Get the accelerometer sensor
+        // Get the accelerometer and gyroscope sensors
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-
-        // Initialize the button and set an OnClickListener
-        val buttonStart: Button = view.findViewById(R.id.buttonStart)
-        buttonStart.setOnClickListener {
-            startSensors()
-        }
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
         // Initialize the TextViews
         accelerometerDataTextView = view.findViewById(R.id.accelerometerDataTextView)
         locationDataTextView = view.findViewById(R.id.locationDataTextView)
+        speedTextView = view.findViewById(R.id.speedDataTextView)
+
+        // Initialize the button
+        buttonStart = view.findViewById(R.id.buttonStart)
+        buttonStart.text = "Start"
+        buttonStart.setOnClickListener {
+            startSensors()
+        }
+
+        // Set initial visibility of TextViews to GONE
+        accelerometerDataTextView.visibility = View.GONE
+        locationDataTextView.visibility = View.GONE
+        speedTextView.visibility = View.GONE
     }
 
+    private var isScanning = false
+
     private fun startSensors() {
-        startAccelerometer()
-        startLocationUpdates()
+        if (!isScanning) {
+            startAccelerometer()
+            startGyroscope()
+            startLocationUpdates()
+            // Update TextViews with initial sensor values
+            accelerometerDataTextView.text = "X: 0.0\nY: 0.0\nZ: 0.0"
+            locationDataTextView.text = "Latitude: 0.0\nLongitude: 0.0"
+            speedTextView.text = "Speed: 0.0 km/h"
+            buttonStart.text = "Stop"
+
+            // Show TextViews
+            accelerometerDataTextView.visibility = View.VISIBLE
+            locationDataTextView.visibility = View.VISIBLE
+            speedTextView.visibility = View.VISIBLE
+        } else {
+            stopSensors()
+            buttonStart.text = "Start"
+
+            // Hide TextViews
+            accelerometerDataTextView.visibility = View.GONE
+            locationDataTextView.visibility = View.GONE
+            speedTextView.visibility = View.GONE
+        }
+
+        isScanning = !isScanning
     }
 
     private fun startAccelerometer() {
         accelerometer?.let { sensor ->
+            sensorManager.registerListener(
+                this,
+                sensor,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+        }
+    }
+
+    private fun startGyroscope() {
+        gyroscope?.let { sensor ->
             sensorManager.registerListener(
                 this,
                 sensor,
@@ -114,23 +157,32 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                 MIN_DISTANCE_CHANGE,
                 this
             )
-        } else {
-            // Permission not granted, handle the error or request it again
-            // You can show a message to the user or request the permission again
         }
     }
 
+    private fun stopSensors() {
+        sensorManager.unregisterListener(this)
+        locationManager.removeUpdates(this)
+    }
+
     override fun onLocationChanged(location: Location) {
+        val latitude = location.latitude
+        val longitude = location.longitude
+
+        val locationData = "Latitude: $latitude\nLongitude: $longitude"
+        locationDataTextView.text = locationData
+
         val speed = location.speed // speed in meters/second
         val speedKmPerHour = speed * 3.6 // convert to kilometers/hour
 
-        val locationData = "Speed: $speedKmPerHour km/h"
-        locationDataTextView.text = locationData
+        val speedData = "Speed: $speedKmPerHour km/h"
+        speedTextView.text = speedData
     }
 
     override fun onResume() {
         super.onResume()
         startAccelerometer()
+        startGyroscope()
     }
 
     override fun onPause() {
@@ -144,13 +196,25 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
 
     override fun onSensorChanged(event: SensorEvent?) {
         event?.let {
-            if (it.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                val x = event.values[0]
-                val y = event.values[1]
-                val z = event.values[2]
+            when (it.sensor.type) {
+                Sensor.TYPE_ACCELEROMETER -> {
+                    val x = event.values[0]
+                    val y = event.values[1]
+                    val z = event.values[2]
 
-                val accelerometerData = "X: $x\nY: $y\nZ: $z"
-                accelerometerDataTextView.text = accelerometerData
+                    val accelerometerData = "X: $x\nY: $y\nZ: $z"
+                    accelerometerDataTextView.text = accelerometerData
+                }
+                Sensor.TYPE_GYROSCOPE -> {
+                    val x = event.values[0]
+                    val y = event.values[1]
+                    val z = event.values[2]
+
+                    // Update TextViews with gyroscope values
+                    // Replace the following lines with your desired implementation
+                    val gyroscopeData = "X: $x\nY: $y\nZ: $z"
+                    // Update the corresponding TextView with gyroscopeData
+                }
             }
         }
     }
