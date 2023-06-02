@@ -19,7 +19,20 @@ code {
 .body-content {
   padding-top: 60px; 
 }
-
+.roads-list {
+  position: fixed;
+  top: 15%;
+  bottom: 5%;
+  left: 5%;
+  right: 55%;
+  overflow-y: auto;
+  background-color: white;
+  padding: 20px;
+  border: 2px solid black;  
+  border-radius: 15px;  
+  display: flex;  
+  flex-direction: column; 
+}
 .map{
   border: 2px solid black;
   width: 40vw !important;
