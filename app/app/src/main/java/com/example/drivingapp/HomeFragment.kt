@@ -8,8 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.app.MainActivity
-import com.example.app.R
+import com.example.app.*
 import com.example.app.databinding.FragmentHomeBinding
 import com.mongodb.MongoException
 import com.mongodb.client.MongoClient
@@ -23,6 +22,7 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.bson.Document
 import org.json.JSONObject
+import org.mindrot.jbcrypt.BCrypt
 import java.io.IOException
 
 
@@ -47,33 +47,14 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
         }
 
         binding.loginButton.setOnClickListener {
-           // val username = binding.usernameEditText.text.toString()
-          //  val password = binding.passwordEditText.text.toString()
+            val username = binding.usernameEditText.text.toString()
+            val password = binding.passwordEditText.text.toString()
             lifecycleScope.launch(Dispatchers.Default) {
-                var mongoClient: MongoClient? = null
-                try {
-                    mongoClient = MongoClients.create("mongodb://192.168.0.105:27017")
-                    println("A!")
-                    val database = mongoClient.getDatabase("vaja4")
-                    println("B!")
 
-                    val collection: MongoCollection<Document> = database.getCollection("users")
-                    println(collection.find().toList())
-                    //val doc: Document = collection.find(eq("title", "Back to the Future")).first()
-                    println("Kotlin is now connected to MongoDB!")
-                } catch (e: MongoException) {
-                    e.printStackTrace()
-                } finally {
-                    mongoClient!!.close()
-
-                }
-
-                withContext(Dispatchers.Main) {
-
-                }
-            }
-         //   login(username, password)
+           login(username, password)
+           }
             println("button clicked")
+
         }
     }
 
@@ -121,49 +102,33 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
         })
     }
 
-    private fun login(username: String, password: String) {
-        val requestBody = JSONObject().apply {
-            put("username", username)
-            put("password", password)
+    private fun oldlogin(username: String, password: String) {
+        lifecycleScope.launch(Dispatchers.Default) {
+            var mongoClient: MongoClient? = null
+            try {
+                mongoClient = MongoClients.create("mongodb://192.168.0.105:27017")
+               // println("A!")
+                val database = mongoClient.getDatabase("vaja4")
+               // println("B!")
+                val collection: MongoCollection<Document> = database.getCollection("users")
+                println("C!")
+                println(collection.find(eq("username","tt")).first())
+                println(collection.find())
+               // if(BCrypt.checkpw(()))
+             //   println(collection.find().toList())
+                //val doc: Document = collection.find(eq("title", "Back to the Future")).first()
+                println("Kotlin is now connected to MongoDB!")
+            } catch (e: MongoException) {
+                e.printStackTrace()
+            } finally {
+                mongoClient!!.close()
+
+            }
+
+            withContext(Dispatchers.Main) {
+            }
         }
 
-        val request = Request.Builder()
-            .url("http://localhost:3000/login")
-            .post(RequestBody.create("application/json".toMediaTypeOrNull(), requestBody.toString()))
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                // Handle network errors
-                activity?.runOnUiThread {
-                    // Show error message to the user
-                    showError("Login failed. Please try again later.")
-                }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val responseData = response.body?.string()
-
-                if (response.isSuccessful) {
-                    // Login successful
-                    val user = JSONObject(responseData)
-
-                    activity?.runOnUiThread {
-                        // Handle the logged-in user data or navigate to the next screen
-                        handleLoginSuccess(user)
-                    }
-                } else {
-                    // Login failed
-                    val errorResponse = JSONObject(responseData)
-                    val errorMessage = errorResponse.optString("message", "Unknown error occurred.")
-
-                    activity?.runOnUiThread {
-                        // Show error message to the user
-                        showError(errorMessage)
-                    }
-                }
-            }
-        })
     }
 
     private fun showError(errorMessage: String) {
