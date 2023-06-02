@@ -9,6 +9,7 @@ import Logout from "./components/Logout";
 import 'leaflet/dist/leaflet.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Roads from './components/Roads';
+import Live from './components/Live';
 
 function App() {
   /**
@@ -50,6 +51,7 @@ function App() {
         <div className="App .body-content" >
           <Header title="My application"></Header>
           <Routes>
+          <Route path="/live" exact element={<Live />}></Route>
           
             <Route path="/" exact element={<Roads />}></Route>
             <Route path="/login" exact element={<Login />}></Route>
