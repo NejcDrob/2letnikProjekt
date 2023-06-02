@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.app.MainActivity
+import com.example.drivingapp.MainActivity
 import com.example.app.R
 import com.example.app.databinding.FragmentHomeBinding
 import com.mongodb.MongoException
@@ -52,7 +52,7 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
             lifecycleScope.launch(Dispatchers.Default) {
                 var mongoClient: MongoClient? = null
                 try {
-                    mongoClient = MongoClients.create("mongodb://192.168.0.105:27017")
+                    mongoClient = MongoClients.create("mongodb://192.168.56.1:27017")
                     println("A!")
                     val database = mongoClient.getDatabase("vaja4")
                     println("B!")
