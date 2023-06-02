@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { UserContext } from '../userContext';
 import { Navigate } from 'react-router-dom';
 
+
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -30,37 +31,33 @@ function Login() {
   }
 
   return (
-    <form onSubmit={handleLogin}>
+    <div className="login-container">
       {userContext.user ? <Navigate replace to="/" /> : ''}
-      <div className="row g-2 align-items-center">
-        <div className="col-auto">
+      <div className="box-container">
+        <form onSubmit={handleLogin} className="login-form">
           <input
             type="text"
             name="username"
             className="form-control"
-            style={{ width: '150px' }}
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
-        <div className="col-auto">
           <input
             type="password"
             name="password"
             className="form-control"
-            style={{ width: '150px' }}
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </div>
+          <button type="submit" className="btn btn-primary">
+            Log in
+          </button>
+          <div className="text-danger">{error}</div>
+        </form>
       </div>
-      <button type="submit" className="btn btn-primary mt-3">
-        Log in
-      </button>
-      <div className="text-danger mt-2">{error}</div>
-    </form>
+    </div>
   );
 }
 

@@ -18,7 +18,15 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import java.io.BufferedReader
+import java.io.DataOutputStream
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.charset.StandardCharsets
 class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, LocationListener {
 
     private lateinit var sensorManager: SensorManager
@@ -62,7 +70,6 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_scan, container, false)
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -217,4 +224,43 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             }
         }
     }
+    fun sandData() {
+        val url = URL("http://localhost:3000/roads")
+        val connection = url.openConnection() as HttpURLConnection
+
+        // Set the request method to POST
+        connection.requestMethod = "POST"
+        connection.doOutput = true
+
+        // Set the request body
+        val requestBody = "xStart=10&yStart=20&xEnd=30&yEnd=40&postedBy=John&state=0" // Replace with your road data
+        val postData = requestBody.toByteArray(StandardCharsets.UTF_8)
+        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+        connection.setRequestProperty("Content-Length", postData.size.toString())
+
+        // Send the request
+        connection.connect()
+        val outputStream = DataOutputStream(connection.outputStream)
+        outputStream.write(postData)
+        outputStream.flush()
+        outputStream.close()
+
+        // Read the response
+        val responseCode = connection.responseCode
+        if (responseCode == HttpURLConnection.HTTP_CREATED) {
+            val reader = BufferedReader(InputStreamReader(connection.inputStream))
+            var line: String?
+            val response = StringBuilder()
+            while (reader.readLine().also { line = it } != null) {
+                response.append(line)
+            }
+            reader.close()
+            println("Road created successfully: $response")
+        } else {
+            println("Error creating road. Response code: $responseCode")
+        }
+
+        connection.disconnect()
+    }
+
 }
