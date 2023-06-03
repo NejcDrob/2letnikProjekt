@@ -4,10 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.app.databinding.ActivityMainBinding
-import com.example.drivingapp.HomeFragment
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
+import com.example.drivingapp.LogInFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -16,14 +13,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val homeFragment = HomeFragment()
+        val logInFragment = LogInFragment()
         val scanFragment = ScanFragment()
         val profileFragment = ProfileFragment()
 
-        setCurrentFragment(homeFragment)
+        setCurrentFragment(logInFragment)
         binding.bottomNavigationView.setOnNavigationItemSelectedListener{
             when(it.itemId){
-                R.id.navHome ->setCurrentFragment(homeFragment)
                 R.id.navScan ->setCurrentFragment(scanFragment)
                 R.id.navProfile ->setCurrentFragment(profileFragment)
             }

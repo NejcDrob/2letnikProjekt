@@ -1,6 +1,5 @@
 package com.example.drivingapp
 
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import com.example.app.*
-import com.example.app.databinding.FragmentHomeBinding
+
+import com.example.app.databinding.FragmentLogInBinding
 import com.mongodb.MongoException
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
@@ -28,8 +26,8 @@ import org.json.JSONObject
 import java.io.IOException
 
 
-class HomeFragment:Fragment(R.layout.fragment_home) {
-    private lateinit var binding: FragmentHomeBinding
+class LogInFragment:Fragment(R.layout.fragment_log_in) {
+    private lateinit var binding: FragmentLogInBinding
     private val client = OkHttpClient()
     val email = "t"
     lateinit var myApplication: MyApplication
@@ -41,16 +39,25 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = FragmentLogInBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.signupButton.setOnClickListener {
-           // navController.navigate(R.id.action_homeFragment_to_registerFragment)
+            val signUpFragment = SignUpFragment()
 
 
+            // Get the parent activity's fragment manager
+            val fragmentManager = requireActivity().supportFragmentManager
+
+            // Begin the fragment transaction
+            fragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, signUpFragment)
+                .addToBackStack(null)
+                .commit()
+            // Replace the current fragment with the new fragment
 
         }
 
