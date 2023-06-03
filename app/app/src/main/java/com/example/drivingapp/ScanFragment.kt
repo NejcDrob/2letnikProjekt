@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.drivingapp
 
 import android.Manifest
 import android.content.Context
