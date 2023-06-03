@@ -16,13 +16,12 @@ function Roads() {
 
   return (
     <div className='roads'>
-    <Map />
-    <div className="d-flex flex-column roads-list">
-      <p className='title'><b>Objave</b></p>
-      {roadList.map(road => (   
-          <Road road={road} key={road._id}></Road>
-      ))}
-    </div>
+     <Map />
+     <div className="d-flex flex-column roads-list">
+    {roadList.map(road => (   
+        <Road road={road} key={road._id}></Road>
+    ))}
+</div>
 
     </div>
   );
