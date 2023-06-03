@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.example.app.*
 import com.example.app.databinding.FragmentHomeBinding
 import com.mongodb.MongoException
@@ -35,6 +37,7 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
         super.onCreate(savedInstanceState)
     myApplication= MyApplication()
 
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,13 +47,11 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.signupButton.setOnClickListener {
-            println("button clicked")
-            val username = binding.usernameEditText.text.toString()
-            val password = binding.passwordEditText.text.toString()
+           // navController.navigate(R.id.action_homeFragment_to_registerFragment)
 
-            signUp(username, password, email)
+
+
         }
 
         binding.loginButton.setOnClickListener {
