@@ -29,6 +29,10 @@ class ProfileFragment:Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         val name= myApplication.user.getString("username")
         val email= myApplication.user.getString("email")
+        if (!myApplication.loggedIn)
+        {
+            binding.buttonLogout.text="login"
+        }
         binding.textViewEmail.text= "Email: $email"
         binding.textViewName.text="Name: $name"
         binding.buttonLogout.setOnClickListener {

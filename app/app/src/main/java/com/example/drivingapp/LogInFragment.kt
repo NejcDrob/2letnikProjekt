@@ -34,6 +34,8 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         myApplication = requireContext().applicationContext as MyApplication
+        myApplication.user=Document()
+        myApplication.loggedIn=false
 
 
     }
