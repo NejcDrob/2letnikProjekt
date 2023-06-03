@@ -1,4 +1,4 @@
-package com.example.app
+package com.example.drivingapp
 
 import android.Manifest
 import android.content.Context
@@ -18,9 +18,13 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.example.app.databinding.ActivityMainBinding
+import com.example.drivingapp.LogInFragment
+import com.example.drivingapp.MyApplication
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
+import org.bson.Document
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
@@ -28,7 +32,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
 class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, LocationListener {
-
+    lateinit var myApplication: MyApplication
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
     private var gyroscope: Sensor? = null
@@ -43,7 +47,11 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         private const val MIN_TIME_INTERVAL = 1000L // 1 second
         private const val MIN_DISTANCE_CHANGE = 1.0f // 1 meter
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        myApplication = requireContext().applicationContext as MyApplication
 
+    }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -90,6 +98,11 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         buttonStart.text = "Start"
         buttonStart.setOnClickListener {
             startSensors()
+        }
+        if (myApplication.loggedIn==false)
+        {
+            buttonStart.text="login to enable this button"
+            buttonStart.isEnabled=false
         }
 
         // Set initial visibility of TextViews to GONE

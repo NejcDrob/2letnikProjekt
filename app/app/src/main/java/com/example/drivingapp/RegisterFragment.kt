@@ -18,7 +18,7 @@ class RegisterFragment: Fragment(R.layout.fragment_register) {
     private lateinit var binding: FragmentRegisterBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        myApplication = MyApplication()
+        myApplication = requireContext().applicationContext as MyApplication
     }
 
     override fun onCreateView(
