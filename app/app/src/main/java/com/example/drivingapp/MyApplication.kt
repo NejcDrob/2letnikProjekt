@@ -16,13 +16,11 @@ import org.bson.types.ObjectId
 open class MyApplication: Application() {
     var mongoClient: MongoClient? = null
     val database = null
-    open var  TTT: String = "ttt"
     open lateinit var  user: Document
     var loggedIn = false
 
     override fun onCreate() {
         super.onCreate()
-        connectToDatabase()
         var user: Document? = null
         println("myapplication has been made")
     }
@@ -32,13 +30,7 @@ open class MyApplication: Application() {
     }
     fun connectToDatabase()
     {
-        TTT= "not a string"
         println("connect to database has been called")
-        println(TTT)
-    }
-    fun t()
-    {
-        println(TTT)
     }
     fun login(username: String, password: String): Int {
         var mongoClient: MongoClient? = null
@@ -72,7 +64,6 @@ open class MyApplication: Application() {
                     println("it works")
                     if (test != null) {
                         user=test
-                        TTT= "not a string"
                     }
                     loggedIn=true
                     return 0
