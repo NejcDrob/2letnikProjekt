@@ -72,10 +72,10 @@ class MyApplication: Application() {
                 e.printStackTrace()
                 return 1
             }
-            println("Kotlin is now connected to MongoDB!")
+           // println("Kotlin is now connected to MongoDB!")
         } catch (e: MongoException) {
-            return 3
             e.printStackTrace()
+            return 3
         } finally {
             mongoClient!!.close()
 
