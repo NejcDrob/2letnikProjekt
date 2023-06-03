@@ -27,16 +27,11 @@ class ProfileFragment:Fragment(R.layout.fragment_profile) {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       var test= myApplication.TTT
         val name= myApplication.user.getString("username")
-        //val email= myApplication.user.getString("email")
-        binding.textViewEmail.text= "Email: $test"
-        //binding.textViewEmail.text= "Email: $email"
+        val email= myApplication.user.getString("email")
+        binding.textViewEmail.text= "Email: $email"
         binding.textViewName.text="Name: $name"
         binding.buttonLogout.setOnClickListener {
-            myApplication.connectToDatabase()
-            var test= myApplication.TTT
-            binding.textViewEmail.text= "Email: $test"
         }
 
 
