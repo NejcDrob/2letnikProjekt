@@ -99,12 +99,33 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     }
 
     private var isScanning = false
+    data class Road(
+        val xStart: Double,
+        val yStart: Double,
+        val xEnd: Double,
+        val yEnd: Double,
+        val state: Int,
+        val postedBy: String
+    )
 
+    private fun generateRoad(xStart: Double, yStart: Double, xEnd: Double, yEnd: Double, speedAVG: Double): Road {
+
+        val road = Road(xStart,yStart,xEnd,yEnd,1,"postedBy")
+        return road
+    }
+    var firstLocation: Location? = null
+    var lastLocation: Location? = null
     private fun startSensors() {
+
+
         if (!isScanning) {
             startAccelerometer()
             startGyroscope()
             startLocationUpdates()
+
+            // Start scanning
+
+
             // Update TextViews with initial sensor values
             accelerometerDataTextView.text = "X: 0.0\nY: 0.0\nZ: 0.0"
             locationDataTextView.text = "Latitude: 0.0\nLongitude: 0.0"
@@ -119,6 +140,15 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             stopSensors()
             buttonStart.text = "Start"
 
+            // Stop scanning
+            val road = generateRoad(
+                firstLocation?.latitude ?: 0.0,
+                firstLocation?.longitude ?: 0.0,
+                lastLocation?.latitude ?: 0.0,
+                lastLocation?.longitude ?: 0.0,
+                0.0,
+            )
+
             // Hide TextViews
             accelerometerDataTextView.visibility = View.GONE
             locationDataTextView.visibility = View.GONE
@@ -126,6 +156,9 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         }
 
         isScanning = !isScanning
+
+
+
     }
 
     private fun startAccelerometer() {
@@ -163,10 +196,12 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                 MIN_DISTANCE_CHANGE,
                 this
             )
+            firstLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         }
     }
 
     private fun stopSensors() {
+
         sensorManager.unregisterListener(this)
         locationManager.removeUpdates(this)
     }
@@ -174,7 +209,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     override fun onLocationChanged(location: Location) {
         val latitude = location.latitude
         val longitude = location.longitude
-
+        lastLocation = location
         val locationData = "Latitude: $latitude\nLongitude: $longitude"
         locationDataTextView.text = locationData
 
@@ -183,6 +218,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
 
         val speedData = "Speed: $speedKmPerHour km/h"
         speedTextView.text = speedData
+
     }
 
     override fun onResume() {
@@ -223,44 +259,6 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                 }
             }
         }
-    }
-    fun sandData() {
-        val url = URL("http://localhost:3000/roads")
-        val connection = url.openConnection() as HttpURLConnection
-
-        // Set the request method to POST
-        connection.requestMethod = "POST"
-        connection.doOutput = true
-
-        // Set the request body
-        val requestBody = "xStart=10&yStart=20&xEnd=30&yEnd=40&postedBy=John&state=0" // Replace with your road data
-        val postData = requestBody.toByteArray(StandardCharsets.UTF_8)
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
-        connection.setRequestProperty("Content-Length", postData.size.toString())
-
-        // Send the request
-        connection.connect()
-        val outputStream = DataOutputStream(connection.outputStream)
-        outputStream.write(postData)
-        outputStream.flush()
-        outputStream.close()
-
-        // Read the response
-        val responseCode = connection.responseCode
-        if (responseCode == HttpURLConnection.HTTP_CREATED) {
-            val reader = BufferedReader(InputStreamReader(connection.inputStream))
-            var line: String?
-            val response = StringBuilder()
-            while (reader.readLine().also { line = it } != null) {
-                response.append(line)
-            }
-            reader.close()
-            println("Road created successfully: $response")
-        } else {
-            println("Error creating road. Response code: $responseCode")
-        }
-
-        connection.disconnect()
     }
 
 }
