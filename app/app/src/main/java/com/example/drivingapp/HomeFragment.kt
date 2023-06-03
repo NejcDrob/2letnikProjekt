@@ -1,5 +1,6 @@
 package com.example.drivingapp
 
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.example.app.*
 import com.example.app.databinding.FragmentHomeBinding
 import com.mongodb.MongoException
@@ -22,7 +25,6 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.bson.Document
 import org.json.JSONObject
-import org.mindrot.jbcrypt.BCrypt
 import java.io.IOException
 
 
@@ -30,6 +32,13 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
     private val client = OkHttpClient()
     val email = "t"
+    lateinit var myApplication: MyApplication
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    myApplication= MyApplication()
+
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -38,20 +47,20 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.signupButton.setOnClickListener {
-            val username = binding.usernameEditText.text.toString()
-            val password = binding.passwordEditText.text.toString()
+           // navController.navigate(R.id.action_homeFragment_to_registerFragment)
 
-            signUp(username, password, email)
+
+
         }
 
         binding.loginButton.setOnClickListener {
             val username = binding.usernameEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
+            println("button clicked")
             lifecycleScope.launch(Dispatchers.Default) {
 
-           login(username, password)
+           myApplication.login(username, password)
            }
             println("button clicked")
 
