@@ -46,7 +46,7 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.signupButton.setOnClickListener {
-            val signUpFragment = SignUpFragment()
+            val registerFragment = RegisterFragment()
 
 
             // Get the parent activity's fragment manager
@@ -54,7 +54,7 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
 
             // Begin the fragment transaction
             fragmentManager.beginTransaction()
-                .replace(R.id.nav_host_fragment, signUpFragment)
+                .replace(R.id.nav_host_fragment, registerFragment)
                 .addToBackStack(null)
                 .commit()
             // Replace the current fragment with the new fragment
@@ -67,9 +67,35 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
             println("button clicked")
             lifecycleScope.launch(Dispatchers.Default) {
 
-           myApplication.login(username, password)
+           val state= myApplication.login(username, password)
+
+                if(state==0)
+                {
+                    val scanFragment = ScanFragment()
+
+
+                    // Get the parent activity's fragment manager
+                    val fragmentManager = requireActivity().supportFragmentManager
+
+                    // Begin the fragment transaction
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.nav_host_fragment, scanFragment)
+                        .addToBackStack(null)
+                        .commit()
+                    // Replace the current fragment with the new fragment
+                }
+                withContext(Dispatchers.Main) {
+                    if(state==1)
+                    {
+                        activity?.runOnUiThread {
+                            // Show error message to the user
+                            showError("username or password is incorrect")
+                        }
+                    }
+                    println("got here")
+                }
+                println("button clicked")
            }
-            println("button clicked")
 
         }
     }
