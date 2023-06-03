@@ -33,6 +33,7 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
     lateinit var myApplication: MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    myApplication= MyApplication()
 
     }
 
@@ -58,7 +59,7 @@ class HomeFragment:Fragment(R.layout.fragment_home) {
             println("button clicked")
             lifecycleScope.launch(Dispatchers.Default) {
 
-           login(username, password)
+           myApplication.login(username, password)
            }
             println("button clicked")
 
