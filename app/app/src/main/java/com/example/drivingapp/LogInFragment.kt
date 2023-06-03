@@ -33,7 +33,7 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
     lateinit var myApplication: MyApplication
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    myApplication= MyApplication()
+        myApplication = requireContext().applicationContext as MyApplication
 
 
     }
@@ -67,9 +67,8 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
             println("button clicked")
             lifecycleScope.launch(Dispatchers.Default) {
 
-           val state= myApplication.login(username, password)
-
-                if(state==0)
+            val state= myApplication.login(username, password)
+            if(state==0)
                 {
                     val scanFragment = ScanFragment()
 

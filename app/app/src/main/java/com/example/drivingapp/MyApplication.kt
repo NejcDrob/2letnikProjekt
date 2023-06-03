@@ -13,14 +13,17 @@ import org.bson.types.ObjectId
 
 
 
-class MyApplication: Application() {
+open class MyApplication: Application() {
     var mongoClient: MongoClient? = null
     val database = null
-
-    var user = null
+    open var  TTT: String = "ttt"
+    open lateinit var  user: Document
     var loggedIn = false
+
     override fun onCreate() {
         super.onCreate()
+        connectToDatabase()
+        var user: Document? = null
         println("myapplication has been made")
     }
     fun test()
@@ -29,7 +32,13 @@ class MyApplication: Application() {
     }
     fun connectToDatabase()
     {
-
+        TTT= "not a string"
+        println("connect to database has been called")
+        println(TTT)
+    }
+    fun t()
+    {
+        println(TTT)
     }
     fun login(username: String, password: String): Int {
         var mongoClient: MongoClient? = null
@@ -61,6 +70,11 @@ class MyApplication: Application() {
                     .verify(password.toCharArray(), databasePassword.toCharArray())
                 if (checkIfRightPassword.verified) {
                     println("it works")
+                    if (test != null) {
+                        user=test
+                        TTT= "not a string"
+                    }
+                    loggedIn=true
                     return 0
                 } else {
                     println("wrong password")
@@ -98,6 +112,9 @@ class MyApplication: Application() {
                val codedPassword= BCrypt.withDefaults().hashToString(12, password.toCharArray());
                 collection.insertOne(Document("username",username).append("password",codedPassword).append("email",email).append("_id", ObjectId()) )
                   println("user should have been made")
+                val test = collection.find(Filters.eq("username", username)).first()
+                user=test
+                loggedIn=true
                 return 0
                 e.printStackTrace()
             }
