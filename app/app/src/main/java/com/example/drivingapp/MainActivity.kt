@@ -1,9 +1,10 @@
-package com.example.app
+package com.example.drivingapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.example.app.R
 import com.example.app.databinding.ActivityMainBinding
 import com.example.drivingapp.LogInFragment
 
