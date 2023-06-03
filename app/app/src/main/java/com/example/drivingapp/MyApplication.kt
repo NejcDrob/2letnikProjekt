@@ -14,7 +14,7 @@ class MyApplication: Application() {
     var mongoClient: MongoClient? = null
     val database = null
 
-    var username = null
+    var user = null
     var loggedIn = false
     override fun onCreate() {
         super.onCreate()
@@ -85,31 +85,12 @@ class MyApplication: Application() {
             val collection: MongoCollection<Document> = database.getCollection("users")
             println("C!")
             try {
-
-
                 val test = collection.find(Filters.eq("username", username)).first()
-                val databasePassword = test.getString("password")
-                println(databasePassword)
-                //     print(test)
-                //print(test[password])
-                //   println(collection.find(Filters.eq("username", "tt")).first())
-                //  println(collection.find())
-                //   println(collection.find().toList())
-                //val doc: Document = collection.find(eq("title", "Back to the Future")).first()
-                println(
-                    BCrypt.verifyer()
-                        .verify(password.toCharArray(), databasePassword.toCharArray())
-                )
-                val checkIfRightPassword = BCrypt.verifyer()
-                    .verify(password.toCharArray(), databasePassword.toCharArray())
-                if (checkIfRightPassword.verified) {
-                    println("it works")
-                } else {
-                    println("wrong password")
-                }
+                println("name exists")
             }
             catch (e: java.lang.NullPointerException)
             {
+               val codedPassword= BCrypt.withDefaults().hashToString(12, password.toCharArray());
                 e.printStackTrace()
             }
 
