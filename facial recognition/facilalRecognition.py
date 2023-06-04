@@ -49,7 +49,7 @@ def lbp(image):
     return lbpImage
 
 # Load the trained model
-model = tf.keras.models.load_model("trained_model.h5")
+model = tf.keras.models.load_model("trained_model_faces.h5")
 
 def predict_animal(image_path):
     img = cv2.imread(image_path)
