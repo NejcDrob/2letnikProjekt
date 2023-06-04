@@ -38,16 +38,10 @@ function Profile(){
                 <p className="card-text h5">Username: {profile.username}</p>
                 <p className="card-text h5">Email: {profile.email}</p>
             </div>
+
         </div>
     </div>
 </div>
-<div className="d-flex flex-column">
-    {roadList.map(road => (   
-        <Road road={road} key={road._id}></Road>
-    ))}
-</div>
-
-          
         </>
         
     );
