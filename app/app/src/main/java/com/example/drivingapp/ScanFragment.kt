@@ -61,7 +61,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     val gson = Gson()
     val client = OkHttpClient()
     //change
-    val request = Request.Builder().url("ws://192.168.1.100:3000").build()
+    val request = Request.Builder().url("ws://192.168.0.117:3000").build()
 
     val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
