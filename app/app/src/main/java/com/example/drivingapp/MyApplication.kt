@@ -19,10 +19,10 @@ open class MyApplication: Application() {
     val database = null
     open lateinit var  user: Document
     var loggedIn = false
-
     override fun onCreate() {
         super.onCreate()
-        var user: Document? = null
+        user=Document()
+        loggedIn=false
         println("myapplication has been made")
     }
     fun test()
