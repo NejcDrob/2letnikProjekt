@@ -4,8 +4,8 @@ var Schema   = mongoose.Schema;
 var rawDataSchema= new Schema({
     'speed': [Number],
     'location' : [Number],
-    'Xpos' : [Number],
-    'Ypos' : [Number],
+    'posX' : [Number],
+    'posY' : [Number],
     'gyroX' : [Number],
     'gyroY' : [Number],
     'gyroZ' : [Number],
