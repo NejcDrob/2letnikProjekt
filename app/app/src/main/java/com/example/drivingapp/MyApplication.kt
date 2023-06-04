@@ -22,6 +22,7 @@ open class MyApplication: Application() {
     val database = null
     open lateinit var  user: Document
     var loggedIn = false
+    var mongoDBIP= "mongodb://192.168.0.117:27017"
     override fun onCreate() {
         super.onCreate()
         user=Document()
@@ -32,7 +33,7 @@ open class MyApplication: Application() {
     fun login(username: String, password: String): Int {
         var mongoClient: MongoClient? = null
         try {
-            mongoClient = MongoClients.create("mongodb://192.168.0.117:27017")
+            mongoClient = MongoClients.create(mongoDBIP)
             val database = mongoClient.getDatabase("vaja4")
             val collection: MongoCollection<Document> = database.getCollection("users")
             try {
@@ -69,7 +70,7 @@ open class MyApplication: Application() {
     fun signUp(username: String, password: String, email: String): Int {
         var mongoClient: MongoClient? = null
         try {
-            mongoClient = MongoClients.create("mongodb://192.168.0.117:27017")
+            mongoClient = MongoClients.create(mongoDBIP)
             val database = mongoClient.getDatabase("vaja4")
             val collection: MongoCollection<Document> = database.getCollection("users")
             try {
@@ -103,7 +104,7 @@ open class MyApplication: Application() {
 
         var mongoClient: MongoClient? = null
         try {
-            mongoClient = MongoClients.create("mongodb://192.168.0.117:27017")
+            mongoClient = MongoClients.create(mongoDBIP)
             val database = mongoClient.getDatabase("vaja4")
             val collection: MongoCollection<Document> = database.getCollection("roads")
             try {
