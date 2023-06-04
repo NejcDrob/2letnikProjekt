@@ -18,9 +18,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.app.databinding.ActivityMainBinding
 import com.example.drivingapp.LogInFragment
 import com.example.drivingapp.MyApplication
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -220,17 +223,29 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     }
 
     private fun stopSensors() {
+        println("called stop sensors")
 
         sensorManager.unregisterListener(this)
         locationManager.removeUpdates(this)
         speedAVG=speedAVG/updatedLocation
-
-    }
-
+        firstLocation?.let {
+            println("got to here1")
+            lastLocation?.let { it1 ->
+                println("got to here")
+                lifecycleScope.launch(Dispatchers.Default) {
+                    myApplication.sendRoad(
+                        it.latitude,
+                        firstLocation!!.longitude, lastLocation!!.latitude, it1.longitude, 2
+                    )
+                }
+            }
+        }
+            }
     override fun onLocationChanged(location: Location) {
         val latitude = location.latitude
         val longitude = location.longitude
         lastLocation = location
+        println(lastLocation)
         val locationData = "Latitude: $latitude\nLongitude: $longitude"
         locationDataTextView.text = locationData
         updatedLocation+=1

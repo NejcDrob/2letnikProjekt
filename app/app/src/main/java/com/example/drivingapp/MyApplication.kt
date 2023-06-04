@@ -2,6 +2,7 @@ package com.example.drivingapp
 
 import android.app.Application
 import at.favre.lib.crypto.bcrypt.BCrypt
+import com.example.app.ScanFragment
 import com.mongodb.MongoException
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
@@ -18,10 +19,10 @@ open class MyApplication: Application() {
     val database = null
     open lateinit var  user: Document
     var loggedIn = false
-
     override fun onCreate() {
         super.onCreate()
-        var user: Document? = null
+        user=Document()
+        loggedIn=false
         println("myapplication has been made")
     }
     fun test()
@@ -120,5 +121,36 @@ open class MyApplication: Application() {
 
         }
         return 3
+    }
+    fun sendRoad (xStart: Double, yStart: Double, xEnd: Double, yEnd: Double, state: Int,)
+    {
+        println("got to sendroad")
+
+
+        var mongoClient: MongoClient? = null
+        try {
+            mongoClient = MongoClients.create("mongodb://192.168.0.117:27017")
+            val database = mongoClient.getDatabase("vaja4")
+            val collection: MongoCollection<Document> = database.getCollection("roads")
+            try {
+                val username=user.getString("username")
+                println("added road")
+                collection.insertOne(Document("xStart",xStart).append("yStart",yStart).append("xEnd",xEnd).append("yEnd",yEnd).append("state",state).append("postedBy",username).append("_id", ObjectId()))
+            }
+            catch (e: java.lang.NullPointerException)
+            {
+                e.printStackTrace()
+            }
+
+
+            println("Kotlin is now connected to MongoDB!")
+        } catch (e: MongoException) {
+            e.printStackTrace()
+        } finally {
+            mongoClient!!.close()
+
+        }
+
+
     }
 }

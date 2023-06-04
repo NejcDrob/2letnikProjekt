@@ -11,7 +11,7 @@ function Profile(){
       const getRoadList=async function(){
         const res=await fetch("http://localhost:3001/roads")
         const data=await res.json()
-        const userRoads = data.filter(road => road.postedBy === profile.username)
+        const userRoads = data.filter(road => road.postedBy == profile.username)
         setRoadList(userRoads)
         console.log(userRoads)
       }
@@ -38,16 +38,15 @@ function Profile(){
                 <p className="card-text h5">Username: {profile.username}</p>
                 <p className="card-text h5">Email: {profile.email}</p>
             </div>
+
         </div>
     </div>
 </div>
-<div className="d-flex flex-column">
-    {roadList.map(road => (   
+<div className="d-flex flex-column roads-list">
+    {roadList.map(road => (
         <Road road={road} key={road._id}></Road>
     ))}
 </div>
-
-          
         </>
         
     );
