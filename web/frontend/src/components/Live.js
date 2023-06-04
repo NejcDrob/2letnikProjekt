@@ -5,7 +5,7 @@ function Live() {
 
   useEffect(() => {
     const fetchLatestMessages = async () => {
-      const response = await fetch('http://localhost:8080/latest-messages');
+      const response = await fetch('http://localhost:3000/latest-messages');
       const data = await response.json();
       setMessages(data);
     };

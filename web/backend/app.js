@@ -24,7 +24,7 @@ var app = express();
 // Add the WebSocket code here
 let latestMessage = null;
 
-const ws = new WebSocket('ws://localhost:8080');
+const ws = new WebSocket('ws://localhost:3000');
 
 ws.on('message', (message) => {
   console.log(`Received message => ${message}`)

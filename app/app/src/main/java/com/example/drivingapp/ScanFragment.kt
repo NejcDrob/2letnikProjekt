@@ -61,7 +61,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     val gson = Gson()
     val client = OkHttpClient()
     //change
-    val request = Request.Builder().url("ws://192.168.1.100:8080").build()
+    val request = Request.Builder().url("ws://192.168.1.100:3000").build()
 
     val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -138,11 +138,11 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         buttonStart.setOnClickListener {
             startSensors()
         }
-       /* if (myApplication.loggedIn==false)
+        if (myApplication.loggedIn==false)
         {
             buttonStart.text="login to enable this button"
             buttonStart.isEnabled=false
-        }*/
+        }
 
         // Set initial visibility of TextViews to GONE
         accelerometerDataTextView.visibility = View.GONE
