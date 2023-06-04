@@ -36,17 +36,14 @@ function MyMap() {
 
 
   return (
-    <div className="map">
-      <MapContainer
-        center={position}
-        zoom={13}
-        style={{ height: "100%", width: "100%" }}
-        ref={mapRef}
+  <div className="map">
+     <MapContainer
+      center={position}
+       zoom={13}
+       style={{ height: "100%", width: "100%" }}
+      ref={mapRef}
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={position} icon={markerIcon}>
-          <Popup>A pretty CSS3 popup. <br /> Easily customizable.</Popup>
-        </Marker>
+       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         {roadList.map((road) => (
           <RoutingMachine road={road} />
         ))}
