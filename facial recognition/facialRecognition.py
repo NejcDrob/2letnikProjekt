@@ -1,40 +1,71 @@
 import cv2
 import numpy as np
-from sklearn.svm import SVC
+import glob
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
- 
-def extract_features(image):
-    lbp = cv2.LBP(radius=1, neighbors=8)
-    features = lbp.compute(image)
-    features = np.ravel(features)  
-    return features
- 
-features_list = []
-labels_list = []
+from joblib import dump, load
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
+import os
+import tensorflow as tf
 
-face_cascade = cv2.CascadeClassifier('path_to_cascade_classifier.xml')
-image = cv2.imread('path_to_image.jpg')
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-for (x, y, w, h) in faces:
-    face_roi = gray[y:y+h, x:x+w]
-    features = extract_features(face_roi)
-    features_list.append(features)
-    labels_list.append(label)  
 
-features_matrix = np.array(features_list)
-labels = np.array(labels_list)
+def razdeli_podatke(images, labels, testSize):
+    XTrain, XTest, yTrain, yTest = train_test_split(images, labels, test_size=testSize, random_state=80, stratify=labels)
+    return XTrain, XTest, yTrain, yTest
 
- 
-X_train, X_test, y_train, y_test = train_test_split(features_matrix, labels, test_size=0.2, random_state=42)
- 
-svm = SVC()
 
- 
-svm.fit(X_train, y_train)
- 
-y_pred = svm.predict(X_test)
- 
-accuracy = accuracy_score(y_test, y_pred)
-print("Natančnost SVM modela:", accuracy)
+def hog(image, cellSize, blockSize, blockStride, binNumber):
+    winSize = (image.shape[1] // cellSize[0] * cellSize[0], image.shape[0] // cellSize[1] * cellSize[1])
+    hogDescriptor = cv2.HOGDescriptor(winSize, blockSize, blockStride, cellSize, binNumber)
+    hogFeature = hogDescriptor.compute(image)
+    hogFeature = hogFeature.flatten()
+    return hogFeature
+
+
+
+def lbp(image):
+    height, width = image.shape
+    lbpImage = np.zeros((height - 2, width - 2), dtype=np.uint8)
+
+    for i in range(1, height - 1):
+        for j in range(1, width - 1):
+            center = image[i, j]
+            binaryPattern = 0
+
+            for di in [-1, 0, 1]:
+                for dj in [-1, 0, 1]:
+                    if di == 0 and dj == 0:
+                        continue
+
+                    neighbor = image[i + di, j + dj]
+                    binaryPattern <<= 1
+                    if neighbor >= center:
+                        binaryPattern |= 1
+
+            lbpValue = binaryPattern
+            lbpImage[i - 1, j - 1] = lbpValue
+
+    return lbpImage
+
+# Load the trained model
+model = tf.keras.models.load_model("trained_model_faces.h5")
+
+def predict_animal(image_path):
+    img = cv2.imread(image_path)
+    img = cv2.resize(img, (100, 100))
+    grayImage = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    lbpImage = lbp(grayImage)
+    hogDescriptor = hog(grayImage, (8, 8), (16, 16), (8, 8), 10)
+    featureVector = np.concatenate((lbpImage.flatten(), hogDescriptor))
+    featureVector = np.array([featureVector])  # Reshape for model input
+    predictions = model.predict(featureVector)
+    animal_classes = ['nik', 'mar', 'nej']
+    predicted_class_index = np.argmax(predictions[0])
+    predicted_class = animal_classes[predicted_class_index]
+    return predicted_class
+
+# Example usage
+image_path = "C:/Users/nik.glavic/Desktop/slike/nik(1).jpg"
+predicted_animal = predict_animal(image_path)
+print("Predicted animal:", predicted_animal)
