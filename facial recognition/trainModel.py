@@ -52,3 +52,10 @@ for i in images:
     catsHOG.append(hog(gray_image))
     # Compute and add the LBP features to the list
     catsLBP.append(lbp(gray_image))
+
+feature_array = []
+for hog_feature, lbp_feature in zip(catsHOG, catsLBP):
+    hog_flat = hog_feature.flatten()
+    lbp_flat = lbp_feature.flatten()
+    combined_feature = np.hstack((hog_flat, lbp_flat))
+    feature_array.append(combined_feature)

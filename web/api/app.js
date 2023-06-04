@@ -15,10 +15,8 @@ io.on('connection', (socket) => {
     sensorData = data;  
   });
 
- 
   socket.emit('sensorData', sensorData);
 
- 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });
@@ -29,7 +27,16 @@ server.listen(port, () => {
   console.log(`Server started on port ${port}`);
 });
 
+app.use(express.json()); // Parse JSON request bodies
+
 app.get('/api/data', (req, res) => {
-  
   res.json(sensorData);
+});
+
+app.post('/api/data', (req, res) => {
+  const newData = req.body;
+
+  sensorData = newData;
+
+  res.status(200).json({ message: 'Data received successfully' });
 });

@@ -59,9 +59,10 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     )
 
     val gson = Gson()
-    val client = OkHttpClient()
+    //val client = OkHttpClient()
     //change
-    val request = Request.Builder().url("ws://192.168.0.117:3000").build()
+    val request = Request.Builder().url("ws://192.168.1.212:8080").build()
+    // val webSocket = client.newWebSocket(request, listener)
 
     val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -80,7 +81,6 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         }
     }
 
-    val webSocket = client.newWebSocket(request, listener)
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
         private const val MIN_TIME_INTERVAL = 1000L // 1 second
@@ -138,12 +138,12 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         buttonStart.setOnClickListener {
             startSensors()
         }
-        if (myApplication.loggedIn==false)
+       /* if (myApplication.loggedIn==false)
         {
             buttonStart.text="login to enable this button"
             buttonStart.isEnabled=false
         }
-
+*/
         // Set initial visibility of TextViews to GONE
         accelerometerDataTextView.visibility = View.GONE
         locationDataTextView.visibility = View.GONE
@@ -259,7 +259,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
 
     private fun stopSensors() {
         println("called stop sensors")
-        webSocket.close(1000, "Goodbye")
+        //webSocket.close(1000, "Goodbye")
         sensorManager.unregisterListener(this)
         locationManager.removeUpdates(this)
         speedAVG /= updatedLocation
@@ -294,8 +294,8 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         speedTextView.text = speedData
 
         // Send location data and speed as JSON
-        val sensorData = SensorData(locationData, speedData, "",myApplication.user.getString("username"))
-        webSocket.send(gson.toJson(sensorData))
+        //val sensorData = SensorData(locationData, speedData, "",myApplication.user.getString("username"))
+        //webSocket.send(gson.toJson(sensorData))
     }
     override fun onResume() {
         super.onResume()
@@ -321,13 +321,13 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                     val z = event.values[2]
                     avgX += x
                     avgY += y
-                    avgZ += y
+                    avgZ += z
                     updatedGyroscope++
                     val accelerometerData = "X: $x\nY: $y\nZ: $z"
 
                     // Send accelerometer data as JSON
                     val sensorData = SensorData("", "", accelerometerData,"")
-                    webSocket.send(gson.toJson(sensorData))
+                    //webSocket.send(gson.toJson(sensorData))
 
                     accelerometerDataTextView.text = accelerometerData
                 }

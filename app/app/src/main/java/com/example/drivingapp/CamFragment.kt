@@ -26,6 +26,12 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+import android.util.Base64
+import androidx.camera.core.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.util.Date
+
 class CamFragment:Fragment(R.layout.fragment_cam) {
     lateinit var myApplication: MyApplication
     private lateinit var binding: FragmentCamBinding
@@ -63,11 +69,17 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
     }
     private val getcameraImage = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if(success){
+            GlobalScope.launch {
+            try {
             createImageData(uri)
-          //  sendPhotoToWeb(photoFile)
+            val res=sendDataToPythonServer(Base64.encodeToString(photoFile.readBytes(), Base64.DEFAULT).replace("\n", ""))
+            handleServerResult(res)
+            } catch (e: Exception){
+                    println("error:$e")
+                }
+            }
         }
-        else{
-        }
+
     }
     private fun createImageData(uri: Uri){
         val inputStream = context?.contentResolver?.openInputStream(uri)
@@ -96,40 +108,33 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
          .commit()
  }
 
-    private fun serverResult(result: String) {
-        val username = myApplication.user.getString("username")
-        println("Before ups")
-        if (result.contains("Nejc")) {
-            if (username.equals("nejc"))
-                goToScan()
-            else
-                println("ups")
-        } else if (result.contains("Nik")) {
-            if (username.equals("nik"))
-                goToScan()
-            else
-                println("ups")
-        } else if (result.contains("Martin")) {
-            if (username.equals("martin"))
-                goToScan()
-            else
-                println("ups")
-        } else
-            println("ups")
-    }
-    private suspend fun sendData(base64String: String): String {
+
+
+    private suspend fun sendDataToPythonServer(base64String: String): String {
         val json = JSONObject()
         json.put("image", base64String)
-        val requestBody = RequestBody.create("faceID/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
+        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request: Request = Request.Builder()
-            .url("http://ip:5000/predict")
+            .url("http://IP:5000/predict")
             .post(requestBody)
             .build()
 
         val client = OkHttpClient()
         val response = client.newCall(request).execute()
-
         return response.body?.string() ?: ""
     }
 
+    private fun handleServerResult(result: String) {
+        if (result.contains("nik")) {
+            myApplication.login("Nik","")
+            goToScan()
+        } else if (result.contains("njc")) {
+            myApplication.login("Nejc","")
+            goToScan()
+        } else if(result.contains("mrt")) {
+            myApplication.login("Martin","")
+            goToScan()
+        } else
+            println("ni usera")
+    }
 }
