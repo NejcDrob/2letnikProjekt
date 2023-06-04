@@ -139,7 +139,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             statOfRoad-20
         if((avgY>2) or(avgY<-2))
             statOfRoad-10
-        if(avgY<9)
+        if(avgZ<9)
             statOfRoad-30
         if(speedAVG<30)
             statOfRoad-40

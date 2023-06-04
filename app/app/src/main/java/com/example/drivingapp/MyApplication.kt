@@ -8,10 +8,13 @@ import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import org.bson.Document
 import org.bson.types.ObjectId
-
-
+import org.json.JSONObject
 
 
 open class MyApplication: Application() {
@@ -33,6 +36,8 @@ open class MyApplication: Application() {
     {
         println("connect to database has been called")
     }
+
+
     fun login(username: String, password: String): Int {
         var mongoClient: MongoClient? = null
         try {
