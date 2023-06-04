@@ -59,3 +59,19 @@ for hog_feature, lbp_feature in zip(catsHOG, catsLBP):
     lbp_flat = lbp_feature.flatten()
     combined_feature = np.hstack((hog_flat, lbp_flat))
     feature_array.append(combined_feature)
+    
+members = []
+for i in range(int(len(images))):
+    if i < 300:
+        members.append("mar")
+    elif 301 < i < 600:
+        members.append("nej")
+    else:
+        members.append("nik")
+labels = np.array(members)
+
+max_length = max(len(feature_array), len(labels))
+if len(feature_array) < max_length:
+    feature_array += [np.zeros_like(feature_array[0])] * (max_length - len(feature_array))
+elif len(labels) < max_length:
+    labels = np.hstack((labels, [None] * (max_length - len(labels))))
