@@ -1,10 +1,15 @@
 package com.example.app
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.content.Context
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.example.app.databinding.FragmentCamBinding
 import com.example.app.databinding.FragmentProfileBinding
@@ -17,12 +22,22 @@ import okhttp3.RequestBody
 import org.bson.Document
 import org.json.JSONObject
 import okhttp3.Request
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
+
 class CamFragment:Fragment(R.layout.fragment_cam) {
     lateinit var myApplication: MyApplication
     private lateinit var binding: FragmentCamBinding
+    private lateinit var photoFile: File
+    private lateinit var photoPath: String
+    private lateinit var uri: Uri
+    private var imageData: ByteArray? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        myApplication = requireContext().applicationContext as MyApplication    }
+        myApplication = requireContext().applicationContext as MyApplication
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,9 +49,42 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        captureImage()
+    }
 
-
-
+    private fun captureImage()
+    {
+        photoFile = createImageFile()
+        try {
+                uri = FileProvider.getUriForFile(requireContext(), "com.example.drivingapp.fileprovider", photoFile)
+        } catch (e: java.lang.Exception){
+        }
+        getcameraImage.launch(uri)
+    }
+    private val getcameraImage = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if(success){
+            createImageData(uri)
+          //  sendPhotoToWeb(photoFile)
+        }
+        else{
+        }
+    }
+    private fun createImageData(uri: Uri){
+        val inputStream = context?.contentResolver?.openInputStream(uri)
+        inputStream?.buffered()?.use{
+            imageData = it.readBytes()
+        }
+    }
+    private fun createImageFile(): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDirectory= context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG${timeStamp}_",
+            ".jpg",
+            storageDirectory
+        ).apply {
+            photoPath = absolutePath
+        }
     }
 
  private fun goToScan(){
