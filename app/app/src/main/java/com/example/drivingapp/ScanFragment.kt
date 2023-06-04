@@ -41,7 +41,14 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     private lateinit var locationDataTextView: TextView
     private lateinit var speedTextView: TextView
     private lateinit var buttonStart: Button
-
+    private  var firstLocation: Location? = null
+    private var lastLocation: Location? = null
+    private var speedAVG:Double =0.0
+    private var updatedLocation:Int=0
+    private var avgX:Double=0.0
+    private var avgY:Double=0.0
+    private var avgZ:Double=9.0
+    private var updatedGyroscope:Int=0;
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
         private const val MIN_TIME_INTERVAL = 1000L // 1 second
@@ -126,8 +133,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         val road = Road(xStart,yStart,xEnd,yEnd,1,"postedBy")
         return road
     }
-    var firstLocation: Location? = null
-    var lastLocation: Location? = null
+
     private fun startSensors() {
 
 
@@ -217,6 +223,8 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
 
         sensorManager.unregisterListener(this)
         locationManager.removeUpdates(this)
+        speedAVG=speedAVG/updatedLocation
+
     }
 
     override fun onLocationChanged(location: Location) {
@@ -225,10 +233,10 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         lastLocation = location
         val locationData = "Latitude: $latitude\nLongitude: $longitude"
         locationDataTextView.text = locationData
-
+        updatedLocation+=1
         val speed = location.speed // speed in meters/second
         val speedKmPerHour = speed * 3.6 // convert to kilometers/hour
-
+        speedAVG+=speedKmPerHour
         val speedData = "Speed: $speedKmPerHour km/h"
         speedTextView.text = speedData
 
@@ -260,16 +268,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                     val accelerometerData = "X: $x\nY: $y\nZ: $z"
                     accelerometerDataTextView.text = accelerometerData
                 }
-                Sensor.TYPE_GYROSCOPE -> {
-                    val x = event.values[0]
-                    val y = event.values[1]
-                    val z = event.values[2]
 
-                    // Update TextViews with gyroscope values
-                    // Replace the following lines with your desired implementation
-                    val gyroscopeData = "X: $x\nY: $y\nZ: $z"
-                    // Update the corresponding TextView with gyroscopeData
-                }
             }
         }
     }
