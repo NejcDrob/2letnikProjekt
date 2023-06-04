@@ -11,7 +11,7 @@ function Header(props) {
                     <div class="collapse navbar-collapse justify-content-end">
                         <ul class="navbar-nav">
                     <li class="nav-item"><Link class="nav-link" to='/'>Home</Link></li>
-                    <li class="nav-item"><Link  class="nav-link" to='/Live'>Live</Link></li>
+             
 
                     <UserContext.Consumer>
                         {context => (
