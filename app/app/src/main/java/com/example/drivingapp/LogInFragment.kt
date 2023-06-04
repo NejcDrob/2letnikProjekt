@@ -63,8 +63,6 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
         }
         binding.loginCamButton.setOnClickListener{
             val camFragment = CamFragment()
-
-
             // Get the parent activity's fragment manager
             val fragmentManager = requireActivity().supportFragmentManager
 
