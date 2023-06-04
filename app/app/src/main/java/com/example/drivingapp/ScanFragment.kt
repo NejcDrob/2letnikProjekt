@@ -109,11 +109,11 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         buttonStart.setOnClickListener {
             startSensors()
         }
-        if (myApplication.loggedIn==false)
+       /* if (myApplication.loggedIn==false)
         {
             buttonStart.text="login to enable this button"
             buttonStart.isEnabled=false
-        }
+        }*/
 
         // Set initial visibility of TextViews to GONE
         accelerometerDataTextView.visibility = View.GONE
@@ -131,9 +131,26 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         val postedBy: String
     )
 
-    private fun generateRoad(xStart: Double, yStart: Double, xEnd: Double, yEnd: Double, speedAVG: Double): Road {
+    private fun generateRoad(xStart: Double, yStart: Double, xEnd: Double, yEnd: Double): Road {
 
-        val road = Road(xStart,yStart,xEnd,yEnd,1,"postedBy")
+        var statOfRoad:Int =100
+        var state:Int=0
+        if((avgX>2) or(avgX<-2))
+            statOfRoad-20
+        if((avgY>2) or(avgY<-2))
+            statOfRoad-10
+        if(avgY<9)
+            statOfRoad-30
+        if(speedAVG<30)
+            statOfRoad-40
+        if(statOfRoad<40)
+            state=0
+        else if((statOfRoad>40) or(statOfRoad<70))
+            state=1
+        else if(statOfRoad<70)
+            state=2
+
+        val road = Road(xStart,yStart,xEnd,yEnd,state,"postedBy")
         return road
     }
 
@@ -162,16 +179,6 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             stopSensors()
             buttonStart.text = "Start"
 
-            // Stop scanning
-            val road = generateRoad(
-                firstLocation?.latitude ?: 0.0,
-                firstLocation?.longitude ?: 0.0,
-                lastLocation?.latitude ?: 0.0,
-                lastLocation?.longitude ?: 0.0,
-                0.0,
-            )
-
-            // Hide TextViews
             accelerometerDataTextView.visibility = View.GONE
             locationDataTextView.visibility = View.GONE
             speedTextView.visibility = View.GONE
@@ -227,7 +234,10 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
 
         sensorManager.unregisterListener(this)
         locationManager.removeUpdates(this)
-        speedAVG=speedAVG/updatedLocation
+        speedAVG /= updatedLocation
+        avgX /= updatedGyroscope
+        avgY /= updatedGyroscope
+        avgZ /= updatedGyroscope
         firstLocation?.let {
             println("got to here1")
             lastLocation?.let { it1 ->
@@ -279,7 +289,10 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                     val x = event.values[0]
                     val y = event.values[1]
                     val z = event.values[2]
-
+                    avgX+=x
+                    avgY+=y
+                    avgZ+=y
+                    updatedGyroscope++
                     val accelerometerData = "X: $x\nY: $y\nZ: $z"
                     accelerometerDataTextView.text = accelerometerData
                 }

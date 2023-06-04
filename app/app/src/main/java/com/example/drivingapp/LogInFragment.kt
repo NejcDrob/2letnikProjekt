@@ -60,7 +60,19 @@ class LogInFragment:Fragment(R.layout.fragment_log_in) {
             // Replace the current fragment with the new fragment
 
         }
+        binding.loginCamButton.setOnClickListener{
+            val camFragment = CamFragment()
 
+
+            // Get the parent activity's fragment manager
+            val fragmentManager = requireActivity().supportFragmentManager
+
+            // Begin the fragment transaction
+            fragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, camFragment)
+                .addToBackStack(null)
+                .commit()
+        }
         binding.loginButton.setOnClickListener {
             val username = binding.usernameEditText.text.toString()
             val password = binding.passwordEditText.text.toString()
