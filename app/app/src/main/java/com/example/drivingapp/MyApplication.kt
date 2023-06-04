@@ -127,7 +127,7 @@ open class MyApplication: Application() {
         }
         return 3
     }
-    fun sendRoad (xStart: Double, yStart: Double, xEnd: Double, yEnd: Double, state: Int,)
+    public fun sendRoad (xStart: Double, yStart: Double, xEnd: Double, yEnd: Double, state: Int,)
     {
         println("got to sendroad")
 

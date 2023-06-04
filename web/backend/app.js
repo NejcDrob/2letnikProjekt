@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
+var WebSocket = require('ws'); // Add this line
+
 // vključimo mongoose in ga povežemo z MongoDB
 var mongoose = require('mongoose');
 var mongoDB = "mongodb://192.168.0.117/vaja4";
@@ -19,6 +21,20 @@ var roadsRouter = require('./routes/roadRoutes');
 
 var app = express();
 
+// Add the WebSocket code here
+let latestMessage = null;
+
+const ws = new WebSocket('ws://localhost:8080');
+
+ws.on('message', (message) => {
+  console.log(`Received message => ${message}`)
+  latestMessage = message;
+});
+
+// Set up an API endpoint to get the latest message
+app.get('/latest-message', (req, res) => {
+  res.json({ message: latestMessage });
+});
 var cors = require('cors');
 var allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
 app.use(cors({

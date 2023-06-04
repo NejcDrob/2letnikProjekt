@@ -24,9 +24,8 @@ import com.example.drivingapp.LogInFragment
 import com.example.drivingapp.MyApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.RequestBody
+import okhttp3.*
+import com.google.gson.Gson
 import org.bson.Document
 import java.io.BufferedReader
 import java.io.DataOutputStream
@@ -51,7 +50,37 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     private var avgX:Double=0.0
     private var avgY:Double=0.0
     private var avgZ:Double=9.0
-    private var updatedGyroscope:Int=0;
+    private var updatedGyroscope:Int=0
+    data class SensorData(
+        val location: String,
+        val speed: String,
+        val accelerometer: String,
+        val user: String
+    )
+
+    val gson = Gson()
+    val client = OkHttpClient()
+    //change
+    val request = Request.Builder().url("ws://192.168.1.100:8080").build()
+
+    val listener = object : WebSocketListener() {
+        override fun onOpen(webSocket: WebSocket, response: Response) {
+            println("WebSocket connection opened")
+            webSocket.send("Hello, server!")
+        }
+
+
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            println("Received message: $text")
+
+        }
+
+        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            println("WebSocket connection failed: ${t.message}")
+        }
+    }
+
+    val webSocket = client.newWebSocket(request, listener)
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
         private const val MIN_TIME_INTERVAL = 1000L // 1 second
@@ -131,7 +160,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         val postedBy: String
     )
 
-    private fun generateRoad(xStart: Double, yStart: Double, xEnd: Double, yEnd: Double): Road {
+    private fun generateRoad(xStart: Double, yStart: Double, xEnd: Double, yEnd: Double)  {
 
         var statOfRoad:Int =100
         var state:Int=0
@@ -150,8 +179,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         else if(statOfRoad<70)
             state=2
 
-        val road = Road(xStart,yStart,xEnd,yEnd,state,"postedBy")
-        return road
+        myApplication.sendRoad(xStart,yStart,xEnd,yEnd,state)
     }
 
     private fun startSensors() {
@@ -231,7 +259,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
 
     private fun stopSensors() {
         println("called stop sensors")
-
+        webSocket.close(1000, "Goodbye")
         sensorManager.unregisterListener(this)
         locationManager.removeUpdates(this)
         speedAVG /= updatedLocation
@@ -258,15 +286,17 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         println(lastLocation)
         val locationData = "Latitude: $latitude\nLongitude: $longitude"
         locationDataTextView.text = locationData
-        updatedLocation+=1
+        updatedLocation += 1
         val speed = location.speed // speed in meters/second
         val speedKmPerHour = speed * 3.6 // convert to kilometers/hour
-        speedAVG+=speedKmPerHour
+        speedAVG += speedKmPerHour
         val speedData = "Speed: $speedKmPerHour km/h"
         speedTextView.text = speedData
 
+        // Send location data and speed as JSON
+        val sensorData = SensorData(locationData, speedData, "",myApplication.user.getString("username"))
+        webSocket.send(gson.toJson(sensorData))
     }
-
     override fun onResume() {
         super.onResume()
         startAccelerometer()
@@ -289,16 +319,19 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                     val x = event.values[0]
                     val y = event.values[1]
                     val z = event.values[2]
-                    avgX+=x
-                    avgY+=y
-                    avgZ+=y
+                    avgX += x
+                    avgY += y
+                    avgZ += y
                     updatedGyroscope++
                     val accelerometerData = "X: $x\nY: $y\nZ: $z"
+
+                    // Send accelerometer data as JSON
+                    val sensorData = SensorData("", "", accelerometerData,"")
+                    webSocket.send(gson.toJson(sensorData))
+
                     accelerometerDataTextView.text = accelerometerData
                 }
-
             }
         }
     }
-
 }
