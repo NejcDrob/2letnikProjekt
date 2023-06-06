@@ -22,7 +22,7 @@ open class MyApplication: Application() {
     val database = null
     open lateinit var  user: Document
     var loggedIn = false
-    var mongoDBIP= "mongodb://192.168.0.117:27017"
+    var mongoDBIP= "mongodb://192.168.0.105:27017"
     override fun onCreate() {
         super.onCreate()
         user=Document()

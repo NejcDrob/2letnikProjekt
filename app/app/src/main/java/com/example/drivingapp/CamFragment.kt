@@ -26,12 +26,17 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+<<<<<<< Updated upstream
+=======
 import android.util.Base64
 import androidx.camera.core.*
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.Date
 
+>>>>>>> Stashed changes
 class CamFragment:Fragment(R.layout.fragment_cam) {
     lateinit var myApplication: MyApplication
     private lateinit var binding: FragmentCamBinding
@@ -69,17 +74,22 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
     }
     private val getcameraImage = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if(success){
-            GlobalScope.launch {
-            try {
             createImageData(uri)
-            val res=sendDataServer(Base64.encodeToString(photoFile.readBytes(), Base64.DEFAULT).replace("\n", ""))
+<<<<<<< Updated upstream
+          //  sendPhotoToWeb(photoFile)
+        }
+        else{
+=======
+                println("slika:")
+                println(imageData)
+            val res=sendDataServer(Base64.encodeToString(imageData, Base64.DEFAULT).replace("\n", ""))
             handleServer(res)
             } catch (e: Exception){
                     println("error:$e")
                 }
             }
+>>>>>>> Stashed changes
         }
-
     }
     private fun createImageData(uri: Uri){
         val inputStream = context?.contentResolver?.openInputStream(uri)
@@ -108,33 +118,74 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
          .commit()
  }
 
-
-
-    private suspend fun sendDataServer(base64String: String): String {
+    private fun serverResult(result: String) {
+        val username = myApplication.user.getString("username")
+        println("Before ups")
+        if (result.contains("Nejc")) {
+            if (username.equals("nejc"))
+                goToScan()
+            else
+                println("ups")
+        } else if (result.contains("Nik")) {
+            if (username.equals("nik"))
+                goToScan()
+            else
+                println("ups")
+        } else if (result.contains("Martin")) {
+            if (username.equals("martin"))
+                goToScan()
+            else
+                println("ups")
+        } else
+            println("ups")
+    }
+    private suspend fun sendData(base64String: String): String {
         val json = JSONObject()
         json.put("image", base64String)
-        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
+        val requestBody = RequestBody.create("faceID/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request: Request = Request.Builder()
-            .url("http://IP:5000/predict")
+<<<<<<< Updated upstream
+            .url("http://ip:5000/predict")
+=======
+            .url("http://192.168.0.105:5000/predict")
+>>>>>>> Stashed changes
             .post(requestBody)
             .build()
 
         val client = OkHttpClient()
         val response = client.newCall(request).execute()
+<<<<<<< Updated upstream
+
+        return response.body?.string() ?: ""
+    }
+
+=======
+        //print(response.body?.string() ?: "")
         return response.body?.string() ?: ""
     }
 
     private fun handleServer(result: String) {
+       println("dobo sem: $result")
         if (result.contains("nik")) {
-            myApplication.login("Nik","123")
+            println("dobilo je nika")
+            lifecycleScope.launch(Dispatchers.Default) {
+            myApplication.login("nik","123")
+            }
             goToScan()
-        } else if (result.contains("njc")) {
-            myApplication.login("Nejc","123")
+        } else if (result.contains("nej")) {
+            println("dobilo je nejca")
+            lifecycleScope.launch(Dispatchers.Default) {
+                myApplication.login("nejc", "123")
+            }
             goToScan()
-        } else if(result.contains("mrt")) {
-            myApplication.login("Martin","123")
+        } else if(result.contains("mar")) {
+            println("dobilo je martina")
+            lifecycleScope.launch(Dispatchers.Default) {
+            myApplication.login("martin","123")
+            }
             goToScan()
         } else
             println("ni usera")
     }
+>>>>>>> Stashed changes
 }
