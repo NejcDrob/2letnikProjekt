@@ -55,7 +55,8 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         val location: String,
         val speed: String,
         val accelerometer: String,
-        val user: String
+        val user: String,
+        val score: Double
     )
 
     val gson = Gson()
@@ -326,7 +327,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                     val accelerometerData = "X: $x\nY: $y\nZ: $z"
 
                     // Send accelerometer data as JSON
-                    val sensorData = SensorData("", "", accelerometerData,"")
+                    //val sensorData = SensorData("", "", accelerometerData,"",0.0)
                     //webSocket.send(gson.toJson(sensorData))
 
                     accelerometerDataTextView.text = accelerometerData

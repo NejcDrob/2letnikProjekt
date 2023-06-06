@@ -72,8 +72,8 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
             GlobalScope.launch {
             try {
             createImageData(uri)
-            val res=sendDataToPythonServer(Base64.encodeToString(photoFile.readBytes(), Base64.DEFAULT).replace("\n", ""))
-            handleServerResult(res)
+            val res=sendDataServer(Base64.encodeToString(photoFile.readBytes(), Base64.DEFAULT).replace("\n", ""))
+            handleServer(res)
             } catch (e: Exception){
                     println("error:$e")
                 }
@@ -110,7 +110,7 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
 
 
 
-    private suspend fun sendDataToPythonServer(base64String: String): String {
+    private suspend fun sendDataServer(base64String: String): String {
         val json = JSONObject()
         json.put("image", base64String)
         val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
@@ -124,15 +124,15 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
         return response.body?.string() ?: ""
     }
 
-    private fun handleServerResult(result: String) {
+    private fun handleServer(result: String) {
         if (result.contains("nik")) {
-            myApplication.login("Nik","")
+            myApplication.login("Nik","123")
             goToScan()
         } else if (result.contains("njc")) {
-            myApplication.login("Nejc","")
+            myApplication.login("Nejc","123")
             goToScan()
         } else if(result.contains("mrt")) {
-            myApplication.login("Martin","")
+            myApplication.login("Martin","123")
             goToScan()
         } else
             println("ni usera")
