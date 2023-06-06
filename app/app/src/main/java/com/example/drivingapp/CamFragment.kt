@@ -26,6 +26,17 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
+<<<<<<< Updated upstream
+=======
+import android.util.Base64
+import androidx.camera.core.*
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import java.util.Date
+
+>>>>>>> Stashed changes
 class CamFragment:Fragment(R.layout.fragment_cam) {
     lateinit var myApplication: MyApplication
     private lateinit var binding: FragmentCamBinding
@@ -64,9 +75,20 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
     private val getcameraImage = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if(success){
             createImageData(uri)
+<<<<<<< Updated upstream
           //  sendPhotoToWeb(photoFile)
         }
         else{
+=======
+                println("slika:")
+                println(imageData)
+            val res=sendDataServer(Base64.encodeToString(imageData, Base64.DEFAULT).replace("\n", ""))
+            handleServer(res)
+            } catch (e: Exception){
+                    println("error:$e")
+                }
+            }
+>>>>>>> Stashed changes
         }
     }
     private fun createImageData(uri: Uri){
@@ -122,14 +144,48 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
         json.put("image", base64String)
         val requestBody = RequestBody.create("faceID/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request: Request = Request.Builder()
+<<<<<<< Updated upstream
             .url("http://ip:5000/predict")
+=======
+            .url("http://192.168.0.105:5000/predict")
+>>>>>>> Stashed changes
             .post(requestBody)
             .build()
 
         val client = OkHttpClient()
         val response = client.newCall(request).execute()
+<<<<<<< Updated upstream
 
         return response.body?.string() ?: ""
     }
 
+=======
+        //print(response.body?.string() ?: "")
+        return response.body?.string() ?: ""
+    }
+
+    private fun handleServer(result: String) {
+       println("dobo sem: $result")
+        if (result.contains("nik")) {
+            println("dobilo je nika")
+            lifecycleScope.launch(Dispatchers.Default) {
+            myApplication.login("nik","123")
+            }
+            goToScan()
+        } else if (result.contains("nej")) {
+            println("dobilo je nejca")
+            lifecycleScope.launch(Dispatchers.Default) {
+                myApplication.login("nejc", "123")
+            }
+            goToScan()
+        } else if(result.contains("mar")) {
+            println("dobilo je martina")
+            lifecycleScope.launch(Dispatchers.Default) {
+            myApplication.login("martin","123")
+            }
+            goToScan()
+        } else
+            println("ni usera")
+    }
+>>>>>>> Stashed changes
 }

@@ -47,19 +47,18 @@ def predict_from_image():
         return jsonify(error='No image part in the request'), 400
 
     image_base64 = request.json['image']
-    
-    test_image = decode_image(image_base64)
-
+    image = decode_image(image_base64)
+    ttt=0
     processed_test_images = []
     if image is not None:
         image = cv2.resize(image, (100, 100))
         gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         processed_test_images.append(gray_image)
-
     HOG_test_features = []
     LBP_test_features = []
     for image in processed_test_images:
         HOG_features = hog(image)
+        ttt=ttt+1
         LBP_features = lbp(image)
         HOG_test_features.append(HOG_features)
         LBP_test_features.append(LBP_features)
@@ -70,22 +69,16 @@ def predict_from_image():
         LBP_flat = LBP_feat.flatten()
         combined_features = numpy.hstack((HOG_flat, LBP_flat))
         combined_test_features.append(combined_features)
-
     test_dataframe = pandas.DataFrame(combined_test_features)
     test_dataframe.fillna(test_dataframe.mean(), inplace=True)
     cleaned_test_features = test_dataframe.values.tolist()
-
     if not cleaned_test_features:
         print("No test features found.")
         exit()
+    print("to bi moglo bit sprinatano")
+    prediction = model.predict(cleaned_test_features)
 
-    predictions = model.predict(cleaned_test_features)
-
-    for image, prediction in zip(test_image, predictions):
-        print("Prediction:", prediction)
-        cv2.waitKey(0)
-
-    return jsonify(prediction=prediction)
+    return jsonify(str(prediction))
     
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

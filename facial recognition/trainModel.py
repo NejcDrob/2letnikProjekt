@@ -29,7 +29,7 @@ def hog(image):
     return hogFeatures
 
 
-img = [cv2.imread(file) for file in glob.glob("C:/Users/nik.glavic/Desktop/slike/*.jpg")]
+img = [cv2.imread(file) for file in glob.glob("C:/Users/nejcd/Desktop/slike/*.jpg")]
 print(len(img))
 
 
