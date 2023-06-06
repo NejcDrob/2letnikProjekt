@@ -59,7 +59,7 @@ for hog_feature, lbp_feature in zip(catsHOG, catsLBP):
     lbp_flat = lbp_feature.flatten()
     combined_feature = np.hstack((hog_flat, lbp_flat))
     feature_array.append(combined_feature)
-    
+
 members = []
 for i in range(int(len(images))):
     if i < 300:
@@ -75,3 +75,22 @@ if len(feature_array) < max_length:
     feature_array += [np.zeros_like(feature_array[0])] * (max_length - len(feature_array))
 elif len(labels) < max_length:
     labels = np.hstack((labels, [None] * (max_length - len(labels))))
+
+feature_array_df = pd.DataFrame(feature_array)
+feature_array_df.fillna(feature_array_df.mean(), inplace=True)
+clean_feature_array = feature_array_df.values.tolist()
+
+X_train, X_test, y_train, y_test = train_test_split(clean_feature_array, labels, test_size=(testPercent/100), random_state=2)
+
+knn_classifier = KNeighborsClassifier(n_neighbors=3)
+knn_classifier.fit(X_train, y_train)
+
+with open('model_123.pkl', 'wb') as file:
+    pickle.dump(knn_classifier, file)
+
+y_pred = knn_classifier.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy:.2f}")
+print("\nClassification report:")
+print(classification_report(y_test, y_pred))
