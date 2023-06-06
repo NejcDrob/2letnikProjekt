@@ -26,8 +26,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-<<<<<<< Updated upstream
-=======
 import android.util.Base64
 import androidx.camera.core.*
 import androidx.lifecycle.lifecycleScope
@@ -36,7 +34,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.Date
 
->>>>>>> Stashed changes
 class CamFragment:Fragment(R.layout.fragment_cam) {
     lateinit var myApplication: MyApplication
     private lateinit var binding: FragmentCamBinding
@@ -67,29 +64,24 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
     {
         photoFile = createImageFile()
         try {
-                uri = FileProvider.getUriForFile(requireContext(), "com.example.drivingapp.fileprovider", photoFile)
+            uri = FileProvider.getUriForFile(requireContext(), "com.example.drivingapp.fileprovider", photoFile)
         } catch (e: java.lang.Exception){
         }
         getcameraImage.launch(uri)
     }
     private val getcameraImage = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if(success){
-            createImageData(uri)
-<<<<<<< Updated upstream
-          //  sendPhotoToWeb(photoFile)
-        }
-        else{
-=======
-                println("slika:")
-                println(imageData)
-            val res=sendDataServer(Base64.encodeToString(imageData, Base64.DEFAULT).replace("\n", ""))
-            handleServer(res)
-            } catch (e: Exception){
+            GlobalScope.launch {
+                try {
+                    createImageData(uri)
+                    val res=sendDataServer(Base64.encodeToString(photoFile.readBytes(), Base64.DEFAULT).replace("\n", ""))
+                    handleServer(res)
+                } catch (e: Exception){
                     println("error:$e")
                 }
             }
->>>>>>> Stashed changes
         }
+
     }
     private fun createImageData(uri: Uri){
         val inputStream = context?.contentResolver?.openInputStream(uri)
@@ -109,67 +101,37 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
         }
     }
 
- private fun goToScan(){
-     val scanFragment = ScanFragment()
-     val fragmentManager = requireActivity().supportFragmentManager
-     fragmentManager.beginTransaction()
-         .replace(R.id.nav_host_fragment, scanFragment)
-         .addToBackStack(null)
-         .commit()
- }
-
-    private fun serverResult(result: String) {
-        val username = myApplication.user.getString("username")
-        println("Before ups")
-        if (result.contains("Nejc")) {
-            if (username.equals("nejc"))
-                goToScan()
-            else
-                println("ups")
-        } else if (result.contains("Nik")) {
-            if (username.equals("nik"))
-                goToScan()
-            else
-                println("ups")
-        } else if (result.contains("Martin")) {
-            if (username.equals("martin"))
-                goToScan()
-            else
-                println("ups")
-        } else
-            println("ups")
+    private fun goToScan(){
+        val scanFragment = ScanFragment()
+        val fragmentManager = requireActivity().supportFragmentManager
+        fragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, scanFragment)
+            .addToBackStack(null)
+            .commit()
     }
-    private suspend fun sendData(base64String: String): String {
+
+
+
+    private suspend fun sendDataServer(base64String: String): String {
         val json = JSONObject()
         json.put("image", base64String)
-        val requestBody = RequestBody.create("faceID/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
+        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request: Request = Request.Builder()
-<<<<<<< Updated upstream
-            .url("http://ip:5000/predict")
-=======
             .url("http://192.168.0.105:5000/predict")
->>>>>>> Stashed changes
             .post(requestBody)
             .build()
 
         val client = OkHttpClient()
         val response = client.newCall(request).execute()
-<<<<<<< Updated upstream
-
-        return response.body?.string() ?: ""
-    }
-
-=======
-        //print(response.body?.string() ?: "")
         return response.body?.string() ?: ""
     }
 
     private fun handleServer(result: String) {
-       println("dobo sem: $result")
+        println("dobo sem: $result")
         if (result.contains("nik")) {
             println("dobilo je nika")
             lifecycleScope.launch(Dispatchers.Default) {
-            myApplication.login("nik","123")
+                myApplication.login("nik","123")
             }
             goToScan()
         } else if (result.contains("nej")) {
@@ -181,11 +143,10 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
         } else if(result.contains("mar")) {
             println("dobilo je martina")
             lifecycleScope.launch(Dispatchers.Default) {
-            myApplication.login("martin","123")
+                myApplication.login("martin","123")
             }
             goToScan()
         } else
             println("ni usera")
     }
->>>>>>> Stashed changes
 }

@@ -147,6 +147,7 @@ module.exports = {
     },
 
     profile: function(req, res,next){
+        console.log("got into profile function")
         UserModel.findById(req.session.userId)
         .exec(function(error, user){
             if(error){
@@ -158,7 +159,9 @@ module.exports = {
                     return next(err);
                 } else{
                     //return res.render('user/profile', user);
+                    console.log("user: "+user.username)
                     return res.json(user);
+            
                 }
             }
         });  

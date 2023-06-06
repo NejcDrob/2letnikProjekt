@@ -7,16 +7,6 @@ function Profile(){
     const userContext = useContext(UserContext); 
     const [profile, setProfile] = useState({});
     const [roadList, setRoadList] = useState([])
-    useEffect(()=>{
-      const getRoadList=async function(){
-        const res=await fetch("http://localhost:3001/roads")
-        const data=await res.json()
-        const userRoads = data.filter(road => road.postedBy == profile.username)
-        setRoadList(userRoads)
-        console.log(userRoads)
-      }
-      getRoadList()
-    }, [])
   
     useEffect(function(){
         const getProfile = async function(){
@@ -26,6 +16,17 @@ function Profile(){
         }
         getProfile();
     }, []);
+
+    useEffect(() => {
+        const getRoadList = async function() {
+          const res = await fetch("http://localhost:3001/roads");
+          const data = await res.json();
+          const userRoads = data.filter(road => road.postedBy === profile.username);
+          setRoadList(userRoads);
+          console.log(userRoads);
+        };
+        getRoadList();
+      }, [profile]);
 
     return (
         <>
