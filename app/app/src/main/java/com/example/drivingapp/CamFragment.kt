@@ -32,6 +32,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Date
 
 class CamFragment:Fragment(R.layout.fragment_cam) {
@@ -117,7 +118,7 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
         json.put("image", base64String)
         val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request: Request = Request.Builder()
-            .url("http://192.168.0.105:5000/predict")
+            .url("http://164.8.162.186:5000/predict")
             .post(requestBody)
             .build()
 
@@ -132,20 +133,27 @@ class CamFragment:Fragment(R.layout.fragment_cam) {
             println("dobilo je nika")
             lifecycleScope.launch(Dispatchers.Default) {
                 myApplication.login("nik","123")
+                withContext(Dispatchers.Main) {
+                    goToScan()
+                }
             }
-            goToScan()
         } else if (result.contains("nej")) {
             println("dobilo je nejca")
             lifecycleScope.launch(Dispatchers.Default) {
                 myApplication.login("nejc", "123")
+                withContext(Dispatchers.Main) {
+                    goToScan()
+                }
             }
-            goToScan()
+
         } else if(result.contains("mar")) {
             println("dobilo je martina")
             lifecycleScope.launch(Dispatchers.Default) {
                 myApplication.login("martin","123")
+                withContext(Dispatchers.Main) {
+                    goToScan()
+                }
             }
-            goToScan()
         } else
             println("ni usera")
     }

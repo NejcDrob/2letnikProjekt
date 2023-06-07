@@ -17,10 +17,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import java.time.LocalTime
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.app.databinding.ActivityMainBinding
-import com.example.drivingapp.LogInFragment
 import com.example.drivingapp.MyApplication
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,15 +27,9 @@ import okhttp3.*
 import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import org.bson.Document
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.DataOutputStream
 import java.io.IOException
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.StandardCharsets
+
 class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, LocationListener {
     lateinit var myApplication: MyApplication
     private lateinit var sensorManager: SensorManager
@@ -62,7 +55,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         var user: String,
         var score: Double
     )
-    val sensorData = SensorData("","","",myApplication.user.getString("username"),0.0)
+    lateinit var sensorData:SensorData
 
     val gson = Gson()
     //val client = OkHttpClient()
@@ -90,11 +83,12 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     companion object {
         private const val PERMISSION_REQUEST_CODE = 1001
         private const val MIN_TIME_INTERVAL = 1000L // 1 second
-        private const val MIN_DISTANCE_CHANGE = 1.0f // 1 meter
+        private const val MIN_DISTANCE_CHANGE = .1f // 1 meter
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         myApplication = requireContext().applicationContext as MyApplication
+        sensorData=SensorData("","","",myApplication.user.getString("username"),0.0)
 
     }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -189,10 +183,10 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         json.put("accelerometer", sensorData.accelerometer)
         json.put("user", sensorData.user)
         json.put("score", sensorData.score)
-
+        myApplication.sendRawData(sensorData.location,sensorData.speed,sensorData.accelerometer,sensorData.score)
         val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
         val request: Request = Request.Builder()
-            .url("http://192.168.0.105:3002/rawData")
+            .url("http://164.8.162.186:3002")
             .post(requestBody)
             .build()
 
@@ -200,6 +194,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 println("ni poslalo")
+                println("error: $e")
             }
 
             override fun onResponse(call: Call, response: Response) {

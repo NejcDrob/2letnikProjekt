@@ -1,20 +1,18 @@
 package com.example.drivingapp
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import at.favre.lib.crypto.bcrypt.BCrypt
-import com.example.app.ScanFragment
 import com.mongodb.MongoException
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
 import org.bson.Document
 import org.bson.types.ObjectId
-import org.json.JSONObject
+import java.time.LocalDateTime
+import java.time.LocalTime
 
 
 open class MyApplication: Application() {
@@ -22,7 +20,8 @@ open class MyApplication: Application() {
     val database = null
     open lateinit var  user: Document
     var loggedIn = false
-    var mongoDBIP= "mongodb://192.168.0.105:27017"
+    var mongoDBIP= "mongodb://164.8.162.186:27017"
+
     override fun onCreate() {
         super.onCreate()
         user=Document()
@@ -33,6 +32,7 @@ open class MyApplication: Application() {
     fun login(username: String, password: String): Int {
         var mongoClient: MongoClient? = null
         try {
+            println("got to login")
             mongoClient = MongoClients.create(mongoDBIP)
             val database = mongoClient.getDatabase("vaja4")
             val collection: MongoCollection<Document> = database.getCollection("users")
@@ -125,5 +125,38 @@ open class MyApplication: Application() {
         }
 
 
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun sendRawData(location: String, speed: String, accelerometer:String, score: Double)
+    {
+        data class SensorData(
+            var location: String,
+            var speed: String,
+            var accelerometer: String,
+            var user: String,
+            var score: Double
+        )
+        var mongoClient: MongoClient? = null
+        try {
+            mongoClient = MongoClients.create(mongoDBIP)
+            val database = mongoClient.getDatabase("vaja4")
+            val collection: MongoCollection<Document> = database.getCollection("rawData")
+            try {
+                val currentTime = LocalDateTime.now()
+                val username=user.getString("username")
+                collection.insertOne(Document("location",location).append("speed",speed).append("accelerometer",accelerometer).append("user",username).append("score",score).append("_id", ObjectId()).append("time",currentTime))
+            }
+            catch (e: java.lang.NullPointerException)
+            {
+                e.printStackTrace()
+            }
+
+
+        } catch (e: MongoException) {
+            e.printStackTrace()
+        } finally {
+            mongoClient!!.close()
+
+        }
     }
 }

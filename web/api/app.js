@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const os = require('os');
 
 const app = express();
 app.use(bodyParser.json());
@@ -30,6 +31,9 @@ app.post('/rawData', (req, res) => {
 app.get('/messages', (req, res) => {
   res.json(messageList);
 });
-app.listen(3002, () => {
+const server = app.listen(3002, "164.8.162.186" ,() => {
+  const host = server.address().address;
+  const port = server.address().port;
+  console.log('Server is running on', host, 'port', port);
   console.log('Server is running on port 3002');
 });
