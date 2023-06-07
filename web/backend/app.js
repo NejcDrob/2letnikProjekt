@@ -16,7 +16,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/userRoutes');
 var roadsRouter = require('./routes/roadRoutes');
-
+var rawDataRouter = require('./routes/rawDataRoutes');
 var app = express();
 
 var cors = require('cors');
@@ -63,7 +63,7 @@ app.use(function (req, res, next) {
   res.locals.session = req.session;
   next();
 });
-
+app.use('/rawdata', rawDataRouter);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/roads', roadsRouter);

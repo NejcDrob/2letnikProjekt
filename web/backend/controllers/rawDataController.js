@@ -2,7 +2,19 @@ var RawDataModel = require('../models/rawDataModel.js');
 
 module.exports = {
 
-    
+    list: function (req, res) {
+        RawDataModel.find(function (err, roads) {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error when getting roads.',
+                    error: err
+                });
+            }
+
+            return res.json(roads);
+        });
+    },
+
 create: function (req, res) {
     var rawData = new RawDataModel({
         speed : req.body.speed,
