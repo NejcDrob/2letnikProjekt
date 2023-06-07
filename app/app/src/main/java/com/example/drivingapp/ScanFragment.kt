@@ -10,12 +10,14 @@ import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import java.time.LocalTime
 import androidx.fragment.app.Fragment
@@ -176,6 +178,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         myApplication.sendRoad(xStart,yStart,xEnd,yEnd,state)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private suspend fun sendDataServer(sensorData: SensorData) {
         val json = JSONObject()
         json.put("location", sensorData.location)
@@ -275,6 +278,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                 this
             )
             firstLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            println("first loction: ${firstLocation}")
         }
     }
 
@@ -300,6 +304,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             }
         }
             }
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onLocationChanged(location: Location) {
         val latitude = location.latitude
         val longitude = location.longitude
