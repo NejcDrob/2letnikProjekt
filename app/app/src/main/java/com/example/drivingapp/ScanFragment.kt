@@ -26,9 +26,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.*
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.bson.Document
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.DataOutputStream
+import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
@@ -52,12 +56,13 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     private var avgZ:Double=9.0
     private var updatedGyroscope:Int=0
     data class SensorData(
-        val location: String,
-        val speed: String,
-        val accelerometer: String,
-        val user: String,
-        val score: Double
+        var location: String,
+        var speed: String,
+        var accelerometer: String,
+        var user: String,
+        var score: Double
     )
+    val sensorData = SensorData("","","",myApplication.user.getString("username"),0.0)
 
     val gson = Gson()
     //val client = OkHttpClient()
@@ -65,7 +70,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     val request = Request.Builder().url("ws://192.168.1.212:8080").build()
     // val webSocket = client.newWebSocket(request, listener)
 
-    val listener = object : WebSocketListener() {
+    var listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             println("WebSocket connection opened")
             webSocket.send("Hello, server!")
@@ -152,14 +157,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
     }
 
     private var isScanning = false
-    data class Road(
-        val xStart: Double,
-        val yStart: Double,
-        val xEnd: Double,
-        val yEnd: Double,
-        val state: Int,
-        val postedBy: String
-    )
+
 
     private fun generateRoad(xStart: Double, yStart: Double, xEnd: Double, yEnd: Double)  {
 
@@ -173,6 +171,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             statOfRoad-30
         if(speedAVG<30)
             statOfRoad-40
+
         if(statOfRoad<40)
             state=0
         else if((statOfRoad>40) or(statOfRoad<70))
@@ -181,6 +180,32 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             state=2
 
         myApplication.sendRoad(xStart,yStart,xEnd,yEnd,state)
+    }
+
+    private suspend fun sendDataServer(sensorData: SensorData) {
+        val json = JSONObject()
+        json.put("location", sensorData.location)
+        json.put("speed", sensorData.speed)
+        json.put("accelerometer", sensorData.accelerometer)
+        json.put("user", sensorData.user)
+        json.put("score", sensorData.score)
+
+        val requestBody = RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), json.toString())
+        val request: Request = Request.Builder()
+            .url("http://192.168.0.105:3002/rawData")
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                println("ni poslalo")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                println(" poslalo")
+            }
+        })
     }
 
     private fun startSensors() {
@@ -272,9 +297,9 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
             lastLocation?.let { it1 ->
                 println("got to here")
                 lifecycleScope.launch(Dispatchers.Default) {
-                    myApplication.sendRoad(
+                    generateRoad(
                         it.latitude,
-                        firstLocation!!.longitude, lastLocation!!.latitude, it1.longitude, 2
+                        firstLocation!!.longitude, lastLocation!!.latitude, it1.longitude
                     )
                 }
             }
@@ -293,10 +318,16 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
         speedAVG += speedKmPerHour
         val speedData = "Speed: $speedKmPerHour km/h"
         speedTextView.text = speedData
-
+        sensorData.location=locationData
+        sensorData.speed=speedData
         // Send location data and speed as JSON
-        //val sensorData = SensorData(locationData, speedData, "",myApplication.user.getString("username"))
-        //webSocket.send(gson.toJson(sensorData))
+        GlobalScope.launch {
+            try {
+                sendDataServer(sensorData)
+            } catch (e: Exception){
+                println("error:$e")
+            }
+        }
     }
     override fun onResume() {
         super.onResume()
@@ -325,10 +356,7 @@ class ScanFragment : Fragment(R.layout.fragment_scan), SensorEventListener, Loca
                     avgZ += z
                     updatedGyroscope++
                     val accelerometerData = "X: $x\nY: $y\nZ: $z"
-
-                    // Send accelerometer data as JSON
-                    //val sensorData = SensorData("", "", accelerometerData,"",0.0)
-                    //webSocket.send(gson.toJson(sensorData))
+                    sensorData.accelerometer=accelerometerData
 
                     accelerometerDataTextView.text = accelerometerData
                 }

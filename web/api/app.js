@@ -1,42 +1,35 @@
 const express = require('express');
-const http = require('http');
-const socketIO = require('socket.io');
+const bodyParser = require('body-parser');
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
-let sensorData = { message: 'Some data from the Sensor' };
+app.use(bodyParser.json());
 
-io.on('connection', (socket) => {
-  console.log('A user connected');
+const messageList = [];  
+const clearMessages = () => {
+  messageList = [];
+};
+setInterval(clearMessages, 5 * 60 * 1000);
 
-  socket.on('sensorData', (data) => {
-    console.log('Received SensorData:', data);
-    sensorData = data;  
-  });
+app.post('/rawData', (req, res) => {
+  const sensorData = req.body;
+  
+  const { location, speed, accelerometer, user, score } = sensorData;
 
-  socket.emit('sensorData', sensorData);
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
+  
+  const existingIndex = messageList.findIndex((message) => message.user == user);
+  if (existingIndex !== -1) {
+   
+    messageList.splice(existingIndex, 1);
+  }
+ 
+  const message = { location, speed, accelerometer, user, score };
+  messageList.push(message);
+ 
+  res.status(200).send('Data received successfully');
 });
-
-const port = 8080;
-server.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+app.get('/messages', (req, res) => {
+  res.json(messageList);
 });
-
-app.use(express.json()); // Parse JSON request bodies
-
-app.get('/api/data', (req, res) => {
-  res.json(sensorData);
-});
-
-app.post('/api/data', (req, res) => {
-  const newData = req.body;
-
-  sensorData = newData;
-
-  res.status(200).json({ message: 'Data received successfully' });
+app.listen(3002, () => {
+  console.log('Server is running on port 3002');
 });
